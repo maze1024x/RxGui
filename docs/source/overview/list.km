@@ -1,0 +1,41 @@
+namespace ::
+
+type Todo record { Key String, Title String, Done Bool }
+
+entry {
+    ShowWindow({
+        @use input = TextBox(),
+        @use add = Button(Icon('list-add'), 'Add'),
+        let initial = List(new Todo('1', 'Foo', Yes), new Todo('2', 'Bar', Yes), new Todo('3', 'Baz', No)),
+        @use edit = ListEditView(initial, { (item,_) => {
+            @use title = TextBox(item.Title),
+            @use done = CheckBox('', item.Done),
+            let update = new:$ Todo($(item.Key), title.Text, done.Checked),
+            @use remove = IconButton(Icon('list-remove'), 'Remove'),
+            let delete = remove.Clicks,
+            @use content = WrapperWithMargins(Row(done.Widget, title.Widget, Spacer(), remove.Widget)),
+            ItemEditView(content.Widget, Null, update, delete)
+        }}),
+        @use Effect(edit | bind-update {
+            prepend: {
+                @concat-map title = Merge(input.TextOnEnters, input.TextOn(add.Clicks)),
+                @await key = UUID,
+                return (new Todo { Key: key, Title: title, Done: No })
+            }
+        }),
+        @use view = ListView(edit.Output, { item => item.Key }, { (item,_) => {
+            @use label = ElidedLabel(item.Title),
+            @use Style(label.Widget, {
+                @map done = item.Done,
+                if (done) { 'color: gray; text-decoration: line-through;' }
+                else { 'font-weight: bold;' }
+            }),
+            @use content = WrapperWithMargins(Row(label.Widget)),
+            ItemView(content.Widget)
+        }}),
+        Window($('List'), Row(
+            Column(Row(input.Widget, add.Widget), edit.Widget),
+            view.Widget
+        ))
+    })
+}

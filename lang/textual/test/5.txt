@@ -1,0 +1,40 @@
+namespace foo ::
+
+const TAB Char { \t }
+
+method Foo.bar Baz {
+    const LoremIpsum = 'Hello World',
+    const (a,b,c) = Triple(1,2,3),
+    let a = when (foo?) {
+        OK foo => (foo + 1),
+        Null => {
+            let x = 1,
+            (x + 2)
+        }
+    },
+    let b = when (xyz) {
+        X | Y => 'xy',
+        Z => Null
+    },
+    let c = {
+        let prompt = 'echo:',
+        @await line = sys::Scanln(prompt),
+        @await sys::Println(line),
+        $()
+    },
+    let d = each (Something[T]) {
+        Foo f => Pair('foo', f),
+        Bar b => Pair('bar', b)
+    },
+    List(u, v, \x0A\x2B\x3C)
+}
+
+operator foobar[A,B] { a A, b B } { c Implicit } Pair[A,B] {
+    expr | pipe-to (args)
+}
+
+function Baz { d D } E {
+    (d foobar d)
+}
+
+

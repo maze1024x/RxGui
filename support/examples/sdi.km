@@ -1,0 +1,68 @@
+namespace ::
+
+entry {
+    @await bus = CreateSubject[EditorDocument[String]] {},
+    @auto-map doc = StartWith(EmptyDoc, bus.Values),
+    ShowNewEditorWindow(doc, bus)
+}
+const EmptyDoc EditorDocument[String] {
+    EditorDocument(Null, '')
+}
+function ShowNewEditorWindow { doc EditorDocument[String], bus Subject[EditorDocument[String]] } $[Null] {
+    ShowWindow({
+        @use e = Editor {
+            initial: doc,
+            content: { text => {
+                @use a = TextArea(text),
+                EditorView(a.Widget, a.Text)
+            }},
+            open: { modified => {
+                @await f = GetFileToOpen('Text (*.txt)'),
+                @await text = ReadTextFile(f), // error handling required for real-world app
+                let doc = EditorDocument(f, text),
+                if (modified) {
+                    @await (bus <- doc),
+                    return ()
+                } else {
+                    return (doc)
+                }
+            }},
+            save: { (f?,text) => {
+                @await f = if (let f = f?) { $(f) }
+                           else { GetFileToSave('Text (*.txt)') },
+                @await WriteTextFile(f, text), // error handling required for real-world app
+                return (f)
+            }}
+        },
+        @use create = Action(Icon('document-new'), 'New', 'Ctrl+N'),
+        @use open = Action(Icon('document-open'), 'Open', 'Ctrl+O'),
+        @use save = Action(Icon('document-save'), 'Save', 'Ctrl+S'),
+        @use save-as = Action(Icon('document-save-as'), 'Save As', 'Ctrl+Shift+S'),
+        @use Effect((bus << (create.Triggers map-to EmptyDoc))),
+        @use Effect((e bind-open open.Triggers)),
+        @use Effect((e bind-save save.Triggers)),
+        @use Effect((e bind-save-as save-as.Triggers)),
+        let title = {
+            @map (modified,file?) = (e.Modified combine-latest e.File),
+            let file-desc = file? | map({ f => f.String }) | ??('Untitiled'),
+            let modified-desc = if (modified) { '*' } else { '' },
+            String('Text Editor - ', file-desc, modified-desc)
+        },
+        let layout = Column(e.Widget),
+        let tool-bar = ToolBar(TextBesideIcon, create, open, save, save-as),
+        Window { title, layout, tool-bar, exit: { closes => {
+            @exhaust-map (_,modified) = (closes with-latest-from e.Modified),
+            if (modified) {
+                @await op = ShowSaveDiscardCancel('Document has unsaved changes.'),
+                when (op) {
+                    Save => e.Save,
+                    Discard => return (Null)
+                }
+            } else {
+                return (Null)
+            }
+        }}}
+    })
+}
+
+

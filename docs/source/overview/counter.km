@@ -1,0 +1,13 @@
+namespace ::
+
+entry {
+    ShowWindow({
+        @use count = State(0),
+        @use dec = PlainButton('-'),
+        @use inc = PlainButton('+'),
+        @use Effect((count bind-update (dec.Clicks map-to { n => (n - 1) }))),
+        @use Effect((count bind-update (inc.Clicks map-to { n => (n + 1) }))),
+        @use num = Label { text: (count.Value map { n => String(' [',n,'] ') }), align: Center },
+        Window($('Counter'), Row(dec.Widget, num.Widget, inc.Widget))
+    })
+}

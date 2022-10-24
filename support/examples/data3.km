@@ -1,0 +1,100 @@
+namespace ::
+
+
+type DataItem record {
+    Key  String,
+    Kind DataKind,
+    Foo  Int,
+    Bar  Float
+}
+const FakeData List[DataItem] {
+    @map i = Count(10),
+    let i = (i + 1),
+    new DataItem {
+        Key:  i.String,
+        Kind: if (((i % 3) != 0)) { A } else { B },
+        Foo:  (i * (8 - i)),
+        Bar:  Sin(i.Float)
+    }
+}
+
+type DataKind enum { A, B }
+method DataKind.String String { when (this) { A => 'A', B => 'B' } }
+operator == { k1 DataKind, k2 DataKind } Bool { (([Int]) k1 == k2) }
+
+type DataTransformer interface {
+    Transform Lambda[List[DataItem],List[DataItem]]
+}
+operator transform { o $[List[DataItem]], x $[Maybe[DataTransformer]] } $[List[DataItem]] {
+    @map (l, f?) = (o combine-latest x),
+    if (let f = f?) { f(l) } else { l }
+}
+function FilterByKind { kind? Maybe[DataKind] } Maybe[DataTransformer] {
+    @map kind = kind?,
+    { l => (l filter { item => (item.Kind == kind) }) }
+}
+function SortByBar { enabled Bool } Maybe[DataTransformer] {
+    if (enabled) {
+        Just({ l => { l | sort { T/<: { (a,b) => (a.Bar < b.Bar) }}} })
+    } else {
+        Null
+    }
+}
+
+entry {
+    ShowWindow({
+        @use filter-all = Action(Icon(), 'Show All'),
+        @use filter-a = Action(Icon(), 'Only A'),
+        @use filter-b = Action(Icon(), 'Only B'),
+        @use kind-filter = ActionComboBox[Maybe[DataKind]](Cons(
+            ActionComboBoxItem(filter-all, Null, Yes),
+            each (DataKind) {
+                A a => ActionComboBoxItem(filter-a, a, No),
+                B b => ActionComboBoxItem(filter-b, b, No)
+            }
+        )),
+        @use sort-toggle = Action(Icon('go-top'), 'Sort by Bar', 'Ctrl+B'),
+        @use bar-sort = ActionCheckBox(sort-toggle, No),
+        let data = {
+            $(FakeData)
+                | transform({
+                    @map kind? = kind-filter.SelectedItem,
+                    FilterByKind(kind?)
+                })
+                | transform({
+                    @map enabled = bar-sort.Checked,
+                    SortByBar(enabled)
+                })
+        },
+        @use view = ListView {
+            data:    data,
+            key:     { item => item.Key },
+            select:  MaybeMultiple,
+            headers: List('key', 'kind', 'foo', 'bar'),
+            stretch: 3,
+            content: { ($item,info) => {
+                @use l-key = Label($(info.Key)),
+                @use l-kind = Label(($item.Kind map { kind => kind.String })),
+                @use l-foo = Label(($item.Foo map { foo => foo.String })),
+                @use l-bar = Label(($item.Bar map { bar => bar.String })),
+                ItemView(List(l-key.Widget, l-kind.Widget, l-foo.Widget, l-bar.Widget))
+            }}
+        },
+        Window(
+            $('Data'),
+            Column(view.Widget),
+            MenuBar(
+                Menu(Icon(), 'Filter', filter-all, filter-a, filter-b),
+                Menu(Icon(), 'Sort', sort-toggle)
+            ),
+            ToolBar(
+                TextBesideIcon,
+                filter-all, filter-a, filter-b,
+                Separator(),
+                sort-toggle
+            )
+        )
+    })
+}
+
+

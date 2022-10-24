@@ -1,0 +1,34 @@
+namespace ::
+
+
+type Post record {
+    id     Int,
+    userId Int,
+    title  String,
+    body   String
+}
+
+entry {
+    ShowWindow({
+        @use posts = State(List(new Post(0,0,'Loading...',''))),
+        @use display = Reloadable({
+            @map posts = posts.$,
+            @use items = Hooks((posts map { post => {
+                @use info = TextView($(String('id=',post.id, ' ', 'userId=',post.userId))),
+                @use title = TextView($(post.title)),
+                @use body = TextView($(post.body)),
+                @use Style(title.Widget, $('font-weight:bold;')),
+                @use Style(info.Widget, $('color:#666;')),
+                @use wrapper = WrapperWithMargins(Column(title.Widget, info.Widget, body.Widget)),
+                Hook[LayoutItem](wrapper.Widget)
+            }})),
+            @use area = ScrollArea(VerticalOnly, Column(Column{items}, Spacer())),
+            Hook(area.Widget)
+        }),
+        let req = Get[List[Post]]('https://jsonplaceholder.typicode.com/posts', ReflectType),
+        @use Effect((posts bind-override (req delay-values 3000))),
+        Window($('Posts'), Column(display.Widget))
+    })
+}
+
+

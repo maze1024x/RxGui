@@ -1,0 +1,13 @@
+namespace ::
+
+entry {
+    ShowWindow({
+        let max = 50,
+        @use slider = Slider(25, 0, max),
+        @use p1 = ProgressBar(slider.Value, max),
+        @use p2 = ProgressBar(slider.Value, max, '[%p%](%v/%m)'),
+        Window($('Slider'), Column(slider.Widget, p1.Widget, p2.Widget))
+    })
+}
+
+

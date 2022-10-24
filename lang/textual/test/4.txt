@@ -1,0 +1,44 @@
+namespace foo ::
+
+using A = b::C
+using d::E
+using f = namespace g
+
+/// doc 1
+/// doc 2
+type Foo record {
+     /// doc 3
+     A Integer,
+     /// doc 4
+     B String ('')
+}
+
+/// doc 5
+type AB union { A, foo::B }
+
+type CD enum {
+    /// doc 6
+    C,
+    /// doc 7
+    D
+}
+
+/// doc 8
+type Bar interface {
+    /// doc 9
+    DoSomething Lambda[Foo,ABCD]
+}
+
+const Baz Int {
+    if (a) {
+        1
+    }
+    if (let b = c, d) {
+        2
+    }
+    else {
+        3
+    }
+}
+
+

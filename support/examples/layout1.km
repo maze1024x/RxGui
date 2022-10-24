@@ -1,0 +1,12 @@
+namespace ::
+
+entry {
+    ShowWindow({
+        @use a = PlainButton('AAAA'),
+        @use b = PlainButton('BBBB'),
+        @use c = PlainButton('CCCC'),
+        Window($('Layout1'), Row(Column(a.Widget,b.Widget),c.Widget))
+    })
+}
+
+

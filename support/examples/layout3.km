@@ -1,0 +1,23 @@
+namespace ::
+
+entry {
+    ShowWindow({
+        @use a = Label($('AAAAAAAAA')),
+        @use b = TextBox('BBBB'),
+        @use c = Label($('CCCC')),
+        @use d = TextBox('DDDD'),
+        @use e = PlainButton('EEEE'),
+        @use f = PlainButton('FFFF'),
+        Window($('Layout3'), Column(
+            Aligned(Top, Grid(
+                Span(a.Widget, 0, 0),
+                Span(b.Widget, 0, 1),
+                Span(c.Widget, 1, 0, Right),
+                Span(d.Widget, 1, 1)
+            )),
+            Aligned(RightBottom, Row(e.Widget, f.Widget))
+        ))
+    })
+}
+
+

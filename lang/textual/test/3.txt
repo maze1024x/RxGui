@@ -1,0 +1,13 @@
+namespace foo ::
+
+type A native
+
+type B interface {}
+
+type C record {}
+
+type D union { A,B,C }
+
+type E enum { Foo,Bar,Baz }
+
+

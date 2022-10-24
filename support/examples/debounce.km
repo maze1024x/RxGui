@@ -1,0 +1,11 @@
+namespace ::
+
+entry {
+    ShowWindow({
+        @use input = TextBox(),
+        @use output = Label(input.Text | debounce-time(600)),
+        Window($('Debounce'), Column(input.Widget, output.Widget))
+    })
+}
+
+

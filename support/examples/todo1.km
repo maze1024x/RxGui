@@ -1,0 +1,39 @@
+namespace ::
+
+entry {
+    ShowWindow({
+        @use hdr2 = {
+            @use cb = CheckBox('Col2', No),
+            @use wrapper = WrapperWithMargins(Row(cb.Widget)),
+            Hook(wrapper.Widget)
+        },
+        @use edit = ListEditView {
+            headers: List('Col0','Col1', hdr2),
+            stretch: 1,
+            initial: List('foo','bar'),
+            content: { (item,info) => {
+                @use logo = IconLabel(Icon('qt-logo')),
+                @use lk = Label($(String('key="',info.Key,'"'))),
+                @use lv = ElidedLabel($(item)),
+                @use del = PlainButton('delete'),
+                @use a = WrapperWithMargins(Row(logo.Widget, lk.Widget, Spacer{width:8})),
+                @use b = WrapperWithMargins(Row(lv.Widget)),
+                @use c = WrapperWithMargins(Row(Spacer(), del.Widget)),
+                ItemEditView {
+                    widgets: List(a.Widget, b.Widget, c.Widget),
+                    delete:  del.Clicks
+                }
+            }}
+        },
+        @use Effect(DebugWatch('output', edit.Output)),
+        @use Effect(DebugExpose('edit', edit)),
+        @use add = PlainButton('Add'),
+        @use buf = TextBox(''),
+        @use Effect(edit | bind-update {
+            append: Merge(buf.TextOnEnters, buf.TextOn(add.Clicks))
+        }),
+        Window($('Todo List'), Column(Row(buf.Widget,add.Widget),edit.Widget))
+    })
+}
+
+

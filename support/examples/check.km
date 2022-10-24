@@ -1,0 +1,12 @@
+namespace ::
+
+entry {
+    ShowWindow({
+        @use ok = CheckBox('OK', No),
+        let text = ok.Checked | map({ checked => String('checked = ',checked) }),
+        @use output = Label(text),
+        Window($('CheckBox'), Column(ok.Widget, output.Widget))
+    })
+}
+
+

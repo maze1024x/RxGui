@@ -1,0 +1,84 @@
+namespace ::
+
+type Post record { id Int, userId Int, title String, body String }
+type PostId record { id Int }
+function EditPost { hint String, draft Post } $[Post] {
+    ShowDialog({
+        @use title = TextBox(draft.title),
+        @use body = TextArea(draft.body),
+        @use ok = PlainButton('OK'),
+        @use cancel = PlainButton('Cancel'),
+        let edited = new:$ Post { title: title.Text, body: body.Text, id: $(draft.id), userId: $(draft.userId) },
+        Dialog {
+            title: $(hint), width: 320, height: 240,
+            layout: Column(title.Widget, body.Widget, Row(Spacer(), ok.Widget, cancel.Widget)),
+            exit: { closes => ok.Clicks | map-to-latest-from(edited) | take-until(Merge(cancel.Clicks, closes)) }
+        }
+    })
+}
+function Try[T] { req $[T] } $[T] {
+    @catch (err,_) = WithCancelTimeout(3000, req),
+    @await ShowCritical(if (err.IsCancel) { 'Request timed out.' } else { err.Message }),
+    return ()
+}
+
+entry {
+    ShowWindow({
+        const url = 'https://jsonplaceholder.typicode.com/posts',
+        @use refresh = Button(Icon('view-refresh'), 'Refresh'),
+        @use create = Button(Icon('document-new'), 'New Post'),
+        @use r = Reloadable({
+            @switch-map StartWith(Null, refresh.Clicks),
+            @map posts = Try(Get[List[Post]](url, ReflectType)),
+            @use list = ListEditView((posts take 12), { (post,_) => {
+                let id = post.id,
+                let url = String(url, '/', id),
+                @use post = State(post),
+                @use label = ElidedLabel(post.Value.title),
+                @use item = WrapperWithMargins(Row(label.Widget)),
+                @use article = TextView { format: Markdown, text: {
+                    @map post = post.Value,
+                    String('### ', post.title, "\n\n", post.body)
+                }},
+                @use info = Label($(String('ID=', id))),
+                @use edit = Button(Icon('accessories-text-editor'), 'Edit'),
+                @use remove = Button(Icon('process-stop'), 'Remove'),
+                @use content = ScrollAreaWithMargins(VerticalOnly, Column(
+                    article.Widget,
+                    Row(info.Widget, edit.Widget, remove.Widget, Spacer()),
+                    Spacer()
+                )),
+                @use Effect((post bind-override {
+                    @exhaust-map post = (edit.Clicks map-to-latest-from post.Value),
+                    @await edited = EditPost { hint: 'Edit Post', draft: post },
+                    @await Try(Put[Post,Null](edited, url, ReflectType)),
+                    return (edited)
+                })),
+                let update = post.Value,
+                let delete = {
+                    @exhaust-map remove.Clicks,
+                    Try(Delete[Null](url, ReflectType))
+                },
+                ItemEditView(item.Widget, content.Widget, update, delete)
+            }}),
+            @use Effect(list | bind-update {
+                prepend: {
+                    @exhaust-map create.Clicks,
+                    let draft = new Post { id: -1, userId: 0, title: 'New Post', body: '' },
+                    @await edited = EditPost { hint: 'Create Post', draft },
+                    @await (id) = Try(Post[Post,PostId](edited, url, ReflectType)),
+                    let post = edited.(id).Assign(id),
+                    return (post)
+                }
+            }),
+            @use placeholder = Wrapper(Aligned(Center, 'Select an item from the list.')),
+            @use s = Switchable((list.Extension map { w => (w ?? placeholder.Widget) })),
+            @use all = Splitter(list.Widget, s.Widget),
+            Hook(all.Widget)
+        }),
+        Window {
+            title: $('RESTful API Client'), width: 640, height: 480,
+            layout: Column(Row(refresh.Widget, create.Widget, Spacer()), r.Widget)
+        }
+    })
+}

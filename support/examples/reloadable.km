@@ -1,0 +1,26 @@
+namespace ::
+
+entry {
+    ShowWindow({
+        @use speed = ComboBox(List(
+            ComboBoxItem(Icon(), 'Normal', 1000, Yes),
+            ComboBoxItem(Icon(), 'Slow',   5000, No),
+            ComboBoxItem(Icon(), 'Fast',   200,  No)
+        )),
+        @use start = PlainButton('Start'),
+        @use content = Reloadable({
+            @map (_,T) = (start.Clicks with-latest-from speed.SelectedItem),
+            @use count = Label({
+                @map n = (SetInterval(T) start-with 0),
+                n.String
+            }),
+            Hook(count.Widget)
+        }),
+        Window($('Reloadable'), Column(
+            Row(speed.Widget, start.Widget),
+            Aligned(Center, content.Widget)
+        ))
+    })
+}
+
+

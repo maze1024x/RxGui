@@ -1,0 +1,36 @@
+namespace ::
+
+function Pad0 { s String, n Int } String {
+    String(Count((n - s.NumberOfChars)) | map({ => '0' }) | join(''), s)
+}
+
+entry {
+    ShowWindow({
+        @use restart = PlainButton { text: 'Start Over' },
+        @use toggle = Subject[Bool] {},
+        @use pause = PlainButton { text: 'Pause', enable: StartWith(No, toggle.Values) },
+        @use resume = PlainButton { text: 'Resume', enable: StartWith(No, (toggle.Values map Not)) },
+        @use Effect((toggle plug Merge((restart.Clicks map-to Yes), (pause.Clicks map-to No), (resume.Clicks map-to Yes)))),
+        @use clock = State(0),
+        @use Effect((clock bind-override {
+            @switch-map restart.Clicks,
+            StartWith(0, {
+                let resume = Merge(Now, TimeOf(resume.Clicks)),
+                @switch-map (t0, base) = (resume with-latest-from clock.Value),
+                @map t = TimeOf((SetInterval(25) take-until pause.Clicks)),
+                ((t -ms t0) + base)
+            })
+        })),
+        @use display = TextView { format: Markdown, text: {
+            @map clock = clock.Value,
+            let ms = ((clock % 1000) / 10).String,
+            let sec = ((clock / 1000) % 60).String,
+            let min = ((clock / 1000) / 60).String,
+            String('# ', Pad0(min, 2), ':', Pad0(sec, 2), '.', Pad0(ms, 2))
+        }},
+        Window($('Stopwatch'), Column(
+            Row(restart.Widget, pause.Widget, resume.Widget),
+            display.Widget
+        ))
+    })
+}

@@ -1,0 +1,78 @@
+namespace ::
+
+entry {
+    ShowWindow({
+        @use edit = ListEditView {
+            headers: List('Col0','Col1'),
+            stretch: 1,
+            initial: List('foo','bar'),
+            select:  MaybeMultiple,
+            content: { (item,info) => {
+                let pos-text = (info.Pos map { (i,n) => String('(',i,'/',n,')') }),
+                let info-text = (pos-text map { t => String(info.Key,' ',t) }),
+                @use logo = IconLabel(Icon('qt-logo')),
+                @use li = Label(info-text),
+                @use buf = TextBox(item),
+                @use lv = ElidedLabel(buf.Text),
+                @use a = WrapperWithMargins(Row(logo.Widget, li.Widget, Spacer{width:8})),
+                @use b = WrapperWithMargins(Row(lv.Widget)),
+                @use ext = Wrapper(Row(buf.Widget)),
+                ItemEditView {
+                    widgets:   List(a.Widget, b.Widget),
+                    update:    buf.Text,
+                    extension: ext.Widget
+                }
+            }}
+        },
+        @use a1 = Action(Icon('document-new'), 'Action 1'),
+        @use a2 = Action(Icon('document-open'), 'Action 2'),
+        @use a3 = Action(Icon(), 'Action 3'),
+        @use opt-foo = Action(Icon('face-smile'), 'Option Foo'),
+        @use opt-bar = Action(Icon('face-surprise'), 'Option Bar'),
+        @use chk = ActionCheckBox(a3, Yes),
+        @use cmb = ActionComboBox(List(
+            ActionComboBoxItem(opt-foo, 'foo', No),
+            ActionComboBoxItem(opt-bar, 'bar', Yes)
+        )),
+        @use ContextMenu(edit.Widget,
+            Menu(Icon(), '', a1, a2, a3,
+                Menu(Icon(), 'options', opt-foo, opt-bar
+            ))),
+        @use Effect(DebugWatch('actions', Merge(
+            (a1.Triggers map-to 'a1 triggered'),
+            (a2.Triggers map-to 'a2 triggered')
+        ))),
+        @use Effect(DebugWatch('chk', chk.Checked)),
+        @use Effect(DebugWatch('cmb', cmb.SelectedItem)),
+        @use Effect(DebugWatch('output', edit.Output)),
+        @use add = PlainButton('+'),
+        @use top = PlainButton('↑↑'),
+        @use up = PlainButton('↑'),
+        @use down = PlainButton('↓'),
+        @use bottom = PlainButton('↓↓'),
+        @use del = PlainButton('⨯'),
+        @use btns = Wrapper(Row(
+            add.Widget,
+            bottom.Widget, down.Widget,
+            up.Widget, top.Widget,
+            del.Widget
+        )),
+        @use Effect(edit | bind-update {
+            append:      add.Clicks | exhaust-map({ => GetLine('Item Content:') }),
+            delete:      del.Clicks,
+            move-up:     up.Clicks,
+            move-down:   down.Clicks,
+            move-top:    top.Clicks,
+            move-bottom: bottom.Clicks
+        }),
+        @use left = Wrapper(Column(btns.Widget,edit.Widget), Rigid),
+        @use placeholder = Label($(' placeholder '), Center),
+        @use sw = Switchable(edit.Extension | map ({ e =>
+            (e ?? placeholder.Widget)
+        })),
+        @use right = WrapperWithMargins(Row(sw.Widget)),
+        Window($('Todo List'), Row(left.Widget, right.Widget))
+    })
+}
+
+

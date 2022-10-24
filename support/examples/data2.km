@@ -1,0 +1,98 @@
+namespace ::
+
+
+type DataItem record {
+    Key  String,
+    Kind DataKind,
+    Foo  Int,
+    Bar  Float
+}
+const FakeData List[DataItem] {
+    @map i = Count(10),
+    let i = (i + 1),
+    new DataItem {
+        Key:  i.String,
+        Kind: if (((i % 3) != 0)) { A } else { B },
+        Foo:  (i * (8 - i)),
+        Bar:  Sin(i.Float)
+    }
+}
+
+type DataKind enum { A, B }
+method DataKind.String String { when (this) { A => 'A', B => 'B' } }
+operator == { k1 DataKind, k2 DataKind } Bool { (([Int]) k1 == k2) }
+
+type DataTransformer interface {
+    Transform Lambda[List[DataItem],List[DataItem]]
+}
+operator transform { o $[List[DataItem]], x $[Maybe[DataTransformer]] } $[List[DataItem]] {
+    @map (l, f?) = (o combine-latest x),
+    if (let f = f?) { f(l) } else { l }
+}
+function FilterByKind { kind? Maybe[DataKind] } Maybe[DataTransformer] {
+    @map kind = kind?,
+    { l => (l filter { item => (item.Kind == kind) }) }
+}
+function SortByBar { enabled Bool } Maybe[DataTransformer] {
+    if (enabled) {
+        Just({ l => { l | sort { T/<: { (a,b) => (a.Bar < b.Bar) }}} })
+    } else {
+        Null
+    }
+}
+
+entry {
+    ShowWindow({
+        @use kind-filter = ComboBox[Maybe[DataKind]](Cons(
+            ComboBoxItem(Icon(), 'All', Null, Yes),
+            each(DataKind) {
+                A a => ComboBoxItem(Icon('face-smile'), a.String, a, No),
+                B b => ComboBoxItem(Icon('face-monkey'), b.String, b, No)
+            }
+        )),
+        @use kind = WrapperWithMargins(Row('kind', kind-filter.Widget), 6, 2),
+        @use bar-sort = CheckBox('sort', No),
+        @use bar = WrapperWithMargins(Row('bar', Spacer(), bar-sort.Widget), 6, 0),
+        let data = {
+            $(FakeData)
+                | transform({
+                    @map kind? = kind-filter.SelectedItem,
+                    FilterByKind(kind?)
+                })
+                | transform({
+                    @map enabled = bar-sort.Checked,
+                    SortByBar(enabled)
+                })
+        },
+        @use view = ListView {
+            data:    data,
+            key:     { item => item.Key },
+            select:  MaybeMultiple,
+            headers: List('key', kind.Widget, 'foo', bar.Widget),
+            stretch: 3,
+            content: { ($item,info) => {
+                let key = info.Key,
+                @use l-key = Label($(key)),
+                @use l-kind = Label(($item.Kind map { kind => kind.String })),
+                @use l-foo = Label(($item.Foo map { foo => foo.String })),
+                @use l-bar = Label(($item.Bar map { bar => bar.String })),
+                @use ext = Label($(String('extension of ', key)), Center),
+                ItemView {
+                    widgets:   List(l-key.Widget, l-kind.Widget, l-foo.Widget, l-bar.Widget),
+                    extension: ext.Widget
+                }
+            }}
+        },
+        @use Effect(DebugWatch('Current', view.Current)),
+        @use Effect(DebugWatch('Selection', view.Selection)),
+        @use placeholder = Label($('placeholder'), Center),
+        @use extension = Switchable({
+            @map e = view.Extension,
+            (e ?? placeholder.Widget)
+        }),
+        @use sp = Splitter(view.Widget, extension.Widget),
+        Window($('Data'), Column(sp.Widget))
+    })
+}
+
+

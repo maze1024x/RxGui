@@ -1,0 +1,24 @@
+namespace ::
+
+entry {
+    ShowWindow({
+        @use list = ListEditView(List[Int](), { (n,_) => {
+            @use label = Label($(String(n))),
+            @use remove = Button(Icon('process-stop'), 'Remove'),
+            @use wrapper = WrapperWithMargins(Row(label.Widget, remove.Widget)),
+            ItemEditView { widgets: wrapper.Widget, delete: remove.Clicks }
+        }}),
+        @use input = TextBox(),
+        @use input-int = Multicasting({
+            @concat-map text = input.TextOnEnters,
+            ParseInt(text).$
+        }),
+        @use Effect(list | bind-update {
+            append: input-int,
+            reorder: (input-int map-to { l => l | sort() })
+        }),
+        Window($('Reorder'), Column(input.Widget,list.Widget))
+    })
+}
+
+

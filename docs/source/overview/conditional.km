@@ -1,0 +1,27 @@
+namespace ::
+
+type ABC enum { A, B, C }
+
+entry {
+    ShowWindow({
+        @use combo = ComboBox(each(ABC) {
+            A a => ComboBoxItem(Icon(), 'A', a, No),
+            B b => ComboBoxItem(Icon(), 'B', b, No),
+            C c => ComboBoxItem(Icon(), 'C', c, Yes)
+        }),
+        @use a = TextBox('111'), @use b = TextBox('222'), @use c = TextBox('333'),
+        @use s = Switchable({
+            @map abc = combo.SelectedItem,
+            when(abc) { A => a.Widget, B => b.Widget, C => c.Widget }
+        }),
+        @use r = Reloadable({
+            @map abc = combo.SelectedItem,
+            @use input = TextBox(when(abc) { A => '111', B => '222', C => '333' }),
+            Hook(input.Widget)
+        }),
+        Window($('Conditional'), Row(
+            combo.Widget,
+            Column(Row(s.Widget, '(Switchable)'), Row(r.Widget, '(Reloadable)'))
+        ))
+    })
+}

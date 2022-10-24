@@ -1,0 +1,7 @@
+/build/*
+!/build/.gitkeep
+/.vscode
+/.qmake.stash
+/*.pro.user
+
+

@@ -1,0 +1,36 @@
+namespace ::
+
+
+type Data record {
+    Foo String ('1'),
+    Bar String ('2')
+}
+operator == { a Data, b Data } Bool {
+    ((a.Foo == b.Foo) and (a.Bar == b.Bar))
+}
+
+entry {
+    ShowWindow({
+        @use e = Editor(EditorDocument(Null, new Data('a','b')), { data => {
+            @use foo = TextBox(data.Foo),
+            @use bar = TextBox(data.Bar),
+            @use group = GroupBox('Data', Form(
+                Pair('Foo:', foo.Widget),
+                Pair('Bar:', bar.Widget)
+            )),
+            @use wrapper = Wrapper(Row(group.Widget), Free, Rigid),
+            EditorView(wrapper.Widget, new:$ Data(foo.Text, bar.Text))
+        }}),
+        @use Effect(DebugWatch('output', e.Output)),
+        @use Effect(DebugWatch('last-save', e.LastSave)),
+        @use defaults = PlainButton('Defaults', (e.Output map { o => (o != { new Data() }) })),
+        @use reset = PlainButton('Reset', EditorDirty(e)),
+        @use save = PlainButton('Save', EditorDirty(e)),
+        @use Effect((e bind-override (defaults.Clicks map-to { new Data() }))),
+        @use Effect((e bind-reset reset.Clicks)),
+        @use Effect((e bind-save save.Clicks)),
+        Window($('Editor'), Column(e.Widget, Row(defaults.Widget, reset.Widget, save.Widget)))
+    })
+}
+
+

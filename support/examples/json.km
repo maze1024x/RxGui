@@ -1,0 +1,238 @@
+namespace json ::
+
+
+type Value union {
+    Null,
+    Bool,
+    Float,
+    String,
+    List[Value],
+    Map[String,Value]
+}
+
+function Stringify { v Value } String {
+    when (v) {
+        Null => 'null',
+        Bool p => if (p) { 'true' } else { 'false' },
+        Float x => x.String,
+        String s => Quote(s),
+        List l => String('[', { l | map(Stringify) | join(',') }, ']'),
+        Map m => String('{',
+            m.Entries
+            | map({ (k,v) => String(Quote(k), ':', Stringify(v)) })
+            | join(','),
+        '}')
+    }
+}
+
+function Parse { s String } Result[Value] {
+    let text = new text {
+        Position:  0,
+        Remaining: s
+    },
+    let result = <value>.Parse(text),
+    when (result) {
+        OK (v, text) => {
+            let text = { text | trim() },
+            if (text.Remaining.Empty) { v }
+            else { Error('expect EOF at position ', text.Position) }
+        },
+        Error e => e
+    }
+}
+
+entry {
+    const v = ([Value]) Map[String,Value](
+        Pair('a', 'foo'),
+        Pair('b', 42.0),
+        Pair('c', List[Value](Null, Yes, No, 0.5, 'abc'))
+    ),
+    @await input = GetText(String('text: (e.g.',Stringify(v),')')),
+    when(Parse(input)) {
+        OK s => ShowInfo(Stringify(s)),
+        Error e => ShowCritical(e.Message)
+    }
+}
+
+
+const <value> parser[Value] {
+    choice(
+        Pair('n', <null>),
+        Pair('tf', <boolean>),
+        Pair('-0123456789', <number>),
+        Pair('"', <string>),
+        Pair('[', <array>),
+        Pair('{', <object>)
+    )
+}
+const <null> parser[Value] {
+    transform('null', 'null', { => ([Value]) Null })
+}
+const <boolean> parser[Value] {
+    transform('boolean', 'true|false', { s =>
+        if ((s == 'true')) { ([Value]) Yes }
+        else { ([Value]) No }
+    })
+}
+const <number> parser[Value] {
+    transform('number', '-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?', { s =>
+        if (let x = ParseFloat(s)) { ([Value]) x }
+        else { Error('invalid number') }
+    })
+}
+const <string> parser[Value] {
+    (<string*> map { s => ([Value]) s })
+}
+const <string*> parser[String] {
+    transform('string', '"(?:[^"\\]|\\u\d{4}|\\["\\\/bfnrt]|)*"', { s =>
+        if (let unquoted = Unquote(s)) { unquoted }
+        else { Error('invalid string') }
+    })
+}
+const <array> parser[Value] {
+    @compose consume('\['),
+    @compose items = sequence(<value>, consume(',')),
+    @compose consume('\]'),
+    return! (items)
+}
+const <object> parser[Value] {
+    @compose consume('{'),
+    @compose entries = sequence(<key-value>, consume(',')),
+    @compose consume('}'),
+    return! (Map{entries})
+}
+const <key-value> parser[Pair[String,Value]] {
+    @compose key = <string*>,
+    @compose consume(':'),
+    @compose value = <value>,
+    return! (Pair(key, value))
+}
+
+type text record {
+    Position  Int,
+    Remaining String
+}
+method text.FirstChar Maybe[Char] {
+    this.Remaining.FirstChar
+}
+operator trim { text text } text {
+    (((text advance '[ \t\r\n]+') map { (_,text) => text }) ?? text)
+}
+operator advance { text text, pattern RegExp } Maybe[Pair[String,text]] {
+    if (let (match, remaining) = (text.Remaining advance pattern)) {
+        Pair(match, new text {
+            Position:  (text.Position + match.NumberOfChars),
+            Remaining: remaining
+        })
+    } else {
+        Null
+    }
+}
+
+type parser[T] interface { Parse Lambda[text,Result[Pair[T,text]]] }
+function return![T] { v T } parser[T] {
+    new parser0(v)
+}
+function consume { pattern RegExp } parser[Null] {
+    new parser1 {
+        Name: { pattern.String | replace('\\', { => '' }) },
+        Pattern: pattern,
+        GetValue: { => Null }
+    }
+}
+function transform[T] { name String, pattern RegExp, k Lambda[String,Result[T]] } parser[T] {
+    new parser1 {
+        Name: name,
+        Pattern: pattern,
+        GetValue: k
+    }
+}
+function variadic choice[T] { branches List[Pair[String,parser[T]]] } parser[T] {
+    let entries = (branches map* { (k,v) => (k.Chars map { ch => Pair(ch,v) }) }),
+    new parser2(Map{entries})
+}
+function sequence[T] { item parser[T], sep parser[Null] } parser[List[T]] {
+    item | repeat(sep)
+}
+
+operator map[A,B] { p parser[A], f Lambda[A,B] } parser[B] {
+    { text =>
+        when (p(text)) {
+            OK (a,remaining) => Pair(f(a), remaining),
+            Error e => e
+        }
+    }
+}
+operator compose[A,B] { p parser[A], f Lambda[A,parser[B]] } parser[B] {
+    { text => {
+        when (p(text)) {
+            OK (a,remaining) => f(a)(remaining),
+            Error e => e
+        }
+    }}
+}
+operator repeat[T] { p parser[T], sep parser[Null] } parser[List[T]] {
+    let tail-parser = ([parser[List[T]]]) { text &recurse => {
+        let recurse = ([parser[List[T]]]) recurse,
+        when (sep(text)) {
+        OK (_,text) => {
+            when (p(text)) {
+            OK (t,remaining) =>
+                (recurse map { tail => Cons(t, tail) })(remaining),
+            Error err =>
+                err
+            }
+        },
+        Error =>
+            Pair(List[T](), text)
+        }
+    }},
+    { text => {
+        when (p(text)) {
+        OK (t,remaining) =>
+            (tail-parser map { tail => Cons(t, tail) })(remaining),
+        Error =>
+            Pair(List[T](), text)
+        }
+    }}
+}
+
+type parser0[T] (parser) record {
+    Value T
+}
+method parser0.Parse Lambda[text,Result[Pair[T,text]]] {
+    { text => Pair(this.Value, text) }
+}
+type parser1[T] (parser) record {
+    Name String,
+    Pattern RegExp,
+    GetValue Lambda[String,Result[T]]
+}
+method parser1.Parse Lambda[text,Result[Pair[T,text]]] {
+    { text => {
+        let text = { text | trim() },
+        if (let (match,remaining) = (text advance this.Pattern)) {
+            when (this.GetValue(match)) {
+                OK t => Pair(t, remaining),
+                Error e => e
+            }
+        } else {
+            Error('expect ', this.Name, ' at position ', text.Position)
+        }
+    }}
+}
+type parser2[T] (parser) record {
+    Mapping Map[Char,parser[T]]
+}
+method parser2.Parse Lambda[text,Result[Pair[T,text]]] {
+    { text => {
+        let text = { text | trim() },
+        if (let c = text.FirstChar, let p = (this.Mapping lookup c)) {
+            p(text)
+        } else {
+            Error('bad text at position ', text.Position)
+        }
+    }}
+}
+
+

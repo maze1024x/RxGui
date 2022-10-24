@@ -1,0 +1,62 @@
+namespace ::
+
+type DataItem record { Key String, Kind DataKind, Value Int, Ratio Float }
+type DataKind enum { A, B }
+method DataKind.String String { when(this) { A => 'A', B => 'B' } }
+operator == { k1 DataKind, k2 DataKind } Bool { (([Int]) k1 == k2) }
+const FakeData List[DataItem] {
+    @map i = Count(10),
+    let i = (i + 1),
+    new DataItem {
+        Key:   i.String,
+        Kind:  if (((i % 3) != 0)) { A } else { B },
+        Value: (i * (8 - i)),
+        Ratio: (Round((Sin(i.Float) * 1000)) / 10)
+    }
+}
+
+entry {
+    ShowWindow({
+        @use kind-filter = ComboBox[Maybe[DataKind]](Cons(
+            ComboBoxItem(Icon(), 'All', Null, Yes),
+            each(DataKind) {
+                A a => ComboBoxItem(Icon('face-smile'), a.String, a, No),
+                B b => ComboBoxItem(Icon('face-monkey'), b.String, b, No)
+            }
+        )),
+        @use ratio-sort = CheckBox('sort', No),
+        let data = {
+            $(FakeData)
+                | combine-latest(kind-filter.SelectedItem)
+                | map({ (list, kind?) =>
+                    if (let kind = kind?) { list | filter({ item => (item.Kind == kind) }) }
+                    else { list }
+                })
+                | combine-latest(ratio-sort.Checked)
+                | map({ (list, sort-enabled) =>
+                    if (sort-enabled) { list | sort { T/<: { (a,b) => (a.Ratio < b.Ratio) } } }
+                    else { list }
+                })
+        },
+        @use kind-header = WrapperWithMargins(Row('kind', kind-filter.Widget), 6, 2),
+        @use ratio-header = WrapperWithMargins(Row('ratio', Spacer(), ratio-sort.Widget), 6, 0),
+        @use view = ListView {
+            data:    data,
+            key:     { item => item.Key },
+            headers: List('key', kind-header.Widget, 'value', ratio-header.Widget),
+            stretch: 3, // stretch the 4th column
+            content: { (item,info) => {
+                let key = info.Key,
+                @use key = Label($(key), Center),
+                @use kind = Label((item.Kind map { k => k.String }), Center),
+                @use value = Label((item.Value map { v => String(' ', v) })),
+                @use ratio = Label((item.Ratio map { r => String(' ', r, '%') })),
+                ItemView(List(key.Widget, kind.Widget, value.Widget, ratio.Widget))
+            }}
+        },
+        Window {
+            title: $('Multi-column Data List'), width: 440, height: 330,
+            layout: Row(view.Widget)
+        }
+    })
+}

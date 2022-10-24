@@ -1,0 +1,20 @@
+namespace ::
+
+entry {
+    ShowWindow({
+        @use input1 = TextBox('TextBox input1'),
+        @use input2 = TextBox('TextBox input2'),
+        @use option = CheckBox('CheckBox', Yes),
+        @use button = PlainButton('PlainButton'),
+        @use static = Label($('static Label')),
+        @use echo1 = Label(input1.Text),
+        @use echo2 = Label((input2.Text debounce-time 500)),
+        @use echo3 = Label((option.Checked map { checked => String('Checked: ', checked) })),
+        @use count = Label(button.Clicks | reduce(0, { (n,_) => (n + 1) }) | map({ n => String('Clicks: ', n) })),
+        Window($('Window'), Column(
+            static.Widget,
+            Row(Column(input1.Widget, echo1.Widget), Column(input2.Widget, echo2.Widget)),
+            Row(Column(option.Widget, echo3.Widget), Column(button.Widget, count.Widget))
+        ))
+    })
+}
