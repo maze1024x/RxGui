@@ -219,10 +219,6 @@ operator lookup[K,V] { m Map[K,V], key K } Maybe[V] native('MapLookup')
 operator delete[K,V] { m Map[K,V], key K } Map[K,V] native('MapDelete')
 operator insert[K,V] { m Map[K,V], pair Pair[K,V] } Map[K,V] native('MapInsert')
 
-type Has[X,T] interface { Operator Lambda[Pair[X,T],Bool] }
-operator in[X,T] { item T, x X } { X/has Has[X,T] } Bool { X/has(x,item) }
-operator not-in[X,T] { item T, x X } { X/has Has[X,T] } Bool { Not((item in x)) }
-
 /// Observable
 type $[T] native
 function variadic $[T] { items List[T] } $[T] native('Observable')

@@ -65,11 +65,6 @@ func (funImplLibraryNative) impl(funImpl) {}
 type funImplLibraryNative struct {
     Id  string
 }
-// func (funImplLoadedAsset) impl(funImpl) {}
-// type funImplLoadedAsset struct {
-//     Path  string
-//     Data  [] byte
-// }
 
 func funImplFromAstBody(body ast.VariousBody) funImpl {
     switch B := body.Body.(type) {
@@ -85,11 +80,6 @@ func funImplFromAstBody(body ast.VariousBody) funImpl {
         return funImplLibraryNative {
             Id: id,
         }
-    // case ast.LoadedAsset:
-    //     return funImplLoadedAsset {
-    //         Path: B.Path,
-    //         Data: B.Data,
-    //     }
     default:
         panic("impossible branch")
     }
@@ -326,8 +316,6 @@ func compileFunction (
         f.SetExprBasedValue(v)
     case funImplLibraryNative:
         f.SetNativeValueById(I.Id, (hdr.funKind == FK_Const))
-    // case funImplLoadedAsset:
-    //     panic("not implemented")
     default:
         panic("impossible branch")
     }

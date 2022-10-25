@@ -78,7 +78,7 @@ var dummyProjectFile = "dummy.manifest.json"
 var dummyProjectFileSystem = compiler.FileSystem(compiler.InlineFileSystem {
     Id:    "dummy",
     Files: map[string] ([] byte) {
-        "dummy.rxsc":       ([] byte)("namespace :: entry { $() }"),
+        "dummy.rxsc":     ([] byte)("namespace :: entry { $() }"),
         dummyProjectFile: ([] byte)(`{"ProjectFiles":["dummy.rxsc"]}`),
     },
 })

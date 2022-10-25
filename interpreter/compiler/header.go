@@ -1130,22 +1130,6 @@ func unifyFunDecl(stmt ast.Statement, pm paramMapping, ns string) *unifiedFunDec
             off:  S.Off,
             impl: funImplAstExpr { expr },
         }
-    // case ast.DeclAsset:
-    //     var name = ast.String2Id(S.Name, S.Node)
-    //     var path = S.Content.Path
-    //     var data = S.Content.Data
-    //     var asset_t = program.AT_Asset()(S.Node)
-    //     var sig = ast.FunctionSignature {
-    //         Node:   S.Node,
-    //         Output: asset_t,
-    //     }
-    //     return &unifiedFunDecl {
-    //         kind: FK_Const,
-    //         name: name,
-    //         sig:  sig,
-    //         loc:  S.Location,
-    //         impl: funImplLoadedAsset { path, data },
-    //     }
     default:
         panic("impossible branch")
     }

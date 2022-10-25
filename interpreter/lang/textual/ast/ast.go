@@ -124,17 +124,6 @@ type VariousStatement struct {
     Node                   `part:"stmt"`
     Statement  Statement   `use:"first"`
 }
-// func (DeclAsset) impl(Statement) {}
-// type DeclAsset struct {
-//     Node
-//     Name     string
-//     Content  LoadedAsset
-// }
-// func (LoadedAsset) implBody() {}
-// type LoadedAsset struct {
-//     Path  string
-//     Data  [] byte
-// }
 func (DeclEntry) impl(Statement) {}
 type DeclEntry struct {
     Node              `part:"decl_entry"`
