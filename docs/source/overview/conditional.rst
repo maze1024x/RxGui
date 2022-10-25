@@ -10,7 +10,7 @@ that shows different inner widget according to the newest value of an Observable
 We'll explain the usage of conditional widgets with the following example,
 which is an arbitrary program just for demonstration purpose.
 
-.. literalinclude :: conditional.km
+.. literalinclude :: conditional.rxsc
     :language: none
 
 There are two kinds of built-in conditional widgets available.

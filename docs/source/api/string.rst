@@ -110,7 +110,7 @@ RegExp
 JSON Parser Example
 ===================
 
-.. literalinclude :: json.km
+.. literalinclude :: json.rxsc
     :language: none
 
 .. Tip::

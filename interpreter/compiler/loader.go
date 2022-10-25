@@ -12,7 +12,7 @@ import (
 )
 
 
-const SourceFilenameSuffix = ".km"
+const SourceFilenameSuffix = ".rxsc"
 
 type Loader struct {
     Suffix  string

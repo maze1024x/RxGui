@@ -769,7 +769,7 @@ Todo List Example
 .. image :: todo.png
     :scale: 62%
 
-.. literalinclude :: todo.km
+.. literalinclude :: todo.rxsc
     :language: none
 
 .. Note::
@@ -786,7 +786,7 @@ SDI Text Editor Example
 .. image :: sdi.png
     :scale: 62%
 
-.. literalinclude :: sdi.km
+.. literalinclude :: sdi.rxsc
     :language: none
 
 .. Tip::

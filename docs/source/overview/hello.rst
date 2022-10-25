@@ -6,7 +6,7 @@ Hello World
 
 The following program shows a message box saying "Hello World".
 
-.. literalinclude :: hello.km
+.. literalinclude :: hello.rxsc
     :language: none
 
 

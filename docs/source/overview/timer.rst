@@ -6,7 +6,7 @@ Timer
 
 The following example program implements a simple stopwatch.
 
-.. literalinclude :: stopwatch.km
+.. literalinclude :: stopwatch.rxsc
     :language: none
 
 When writing a timer-related program,

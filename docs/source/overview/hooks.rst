@@ -16,7 +16,7 @@ and the underlying mechanics is completely different.
 The following program implements a simple counter.
 We'll explain the concept of Hook with this example.
 
-.. literalinclude :: counter.km
+.. literalinclude :: counter.rxsc
     :language: none
 
 ``State``, ``PlainButton``, ``Effect`` and ``Label`` are functions

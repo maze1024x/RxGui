@@ -8,7 +8,7 @@ The following example program implements a dummy CURD app
 based on the fake RESTful API provided by
 `JSON Placeholder <https://jsonplaceholder.typicode.com/>`_.
 
-.. literalinclude :: rest.km
+.. literalinclude :: rest.rxsc
     :language: none
 
 We have out-of-the-box support for sending JSON requests to a RESTful API.

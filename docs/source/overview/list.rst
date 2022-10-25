@@ -8,7 +8,7 @@ We'll explain the usage of *list widgets*
 with the help of the following example program,
 which implements an ad-hoc todo list with an extra list echoing the current list.
 
-.. literalinclude :: list.km
+.. literalinclude :: list.rxsc
     :language: none
 
 There are two kinds of list widgets.
@@ -39,7 +39,7 @@ It may also have up/down buttons beside it to adjust the order of items.
 Such a classic editable list can be easily implemented with ListEditView,
 as shown by the following example program.
 
-.. literalinclude :: extension.km
+.. literalinclude :: extension.rxsc
     :language: none
 
 Multi-column Data List
@@ -52,7 +52,7 @@ A multi-column data list with custom headers providing sort/filter features
 can be easily implemented with ListView,
 as shown by the following example program.
 
-.. literalinclude :: headers.km
+.. literalinclude :: headers.rxsc
     :language: none
 
 

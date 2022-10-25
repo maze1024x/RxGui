@@ -63,11 +63,11 @@ func compile(file string, fs compiler.FileSystem) (*program.Program, *compiler.D
     }
     return compiler.Compile(groups, meta)
 }
-//go:embed builtin/builtin.km
+//go:embed builtin/builtin.rxsc
 var builtinRawFileSystem embed.FS
 var builtinSourceFileGroup = compiler.SourceFileGroup {
     FileList: [] string {
-        "builtin/builtin.km",
+        "builtin/builtin.rxsc",
     },
     FileSystem: compiler.EmbeddedFileSystem {
         Id: "builtin",
@@ -78,8 +78,8 @@ var dummyProjectFile = "dummy.manifest.json"
 var dummyProjectFileSystem = compiler.FileSystem(compiler.InlineFileSystem {
     Id:    "dummy",
     Files: map[string] ([] byte) {
-        "dummy.km":       ([] byte)("namespace :: entry { $() }"),
-        dummyProjectFile: ([] byte)(`{"ProjectFiles":["dummy.km"]}`),
+        "dummy.rxsc":       ([] byte)("namespace :: entry { $() }"),
+        dummyProjectFile: ([] byte)(`{"ProjectFiles":["dummy.rxsc"]}`),
     },
 })
 

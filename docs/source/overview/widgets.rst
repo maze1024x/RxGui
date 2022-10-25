@@ -6,7 +6,7 @@ Basic Widgets
 
 We'll explain the usage of basic widgets with the following example program.
 
-.. literalinclude :: widgets.km
+.. literalinclude :: widgets.rxsc
     :language: none
 
 There are mainly two kinds of basic widgets.
