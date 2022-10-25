@@ -93,16 +93,4 @@ QMetaObject::Connection QtDynamicConnect (
     return QObject::connect(emitter, signal, receiver, slot);
 }
 
-tdl_draw_t tdl_draw = nullptr;
-void* workaround_tdl_vptr = nullptr;
-void WorkaroundTdlDraw(QAbstractTextDocumentLayout* self, QPainter* painter, QAbstractTextDocumentLayout::PaintContext* context) {
-    QTextDocument* doc = self->document();
-    QTextOption opt = doc->defaultTextOption();
-    opt.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
-    self->blockSignals(true);
-    doc->setDefaultTextOption(opt);
-    self->blockSignals(false);
-    tdl_draw(self, painter, context);
-}
-
 

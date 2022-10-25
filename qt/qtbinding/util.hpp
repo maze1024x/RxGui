@@ -498,74 +498,15 @@ signals:
     void elisionChanged(bool elided);
 };
 
-typedef void (*tdl_draw_t) (QAbstractTextDocumentLayout*,QPainter*,QAbstractTextDocumentLayout::PaintContext*);
-extern tdl_draw_t tdl_draw;
-extern void* workaround_tdl_vptr;
-void WorkaroundTdlDraw(QAbstractTextDocumentLayout* self, QPainter* painter, QAbstractTextDocumentLayout::PaintContext* context);
 class TextView: public QLabel {
     Q_OBJECT
 public:
     TextView(QString text, Qt::TextFormat format, QWidget* parent): QLabel(parent) {
-        setTextFormat(Qt::PlainText);
-        setText(""); setText(" "); // force set d->isTextLabel
         setWordWrap(true);
-        void** control_addr;
-        if (FindControlAddr(&control_addr)) {
-            // create a QWidgetTextControl instance and retrieve it
-            setTextInteractionFlags(Qt::TextSelectableByMouse | textInteractionFlags()); // enable user-select and create a control
-            QObject* control = (QObject*) *control_addr;
-            // get the d_ptr of control
-            size_t d_offset = ((uint8_t*)(&d_ptr) - (uint8_t*)(this));
-            using d_ptr_t = QScopedPointer<QObjectData>;
-            d_ptr_t* control_d = (d_ptr_t*)((uint8_t*)(control) + d_offset);
-            void* control_d_raw = control_d->data();
-            // skip QObjectData and QObjectPrivate,
-            // find "QTextDocument *doc;" in QWidgetTextControlPrivate,
-            // which is the first member variable (offset 0)
-            // reference: https://code.woboq.org/qt6/qtbase/src/widgets/widgets/qwidgettextcontrol_p_p.h.html#QWidgetTextControlPrivate::doc
-            uint8_t* priv0 = ((uint8_t*)(control_d_raw) + sizeof(QObjectData));
-            size_t assume_sizeof_QObjectPrivate = (5 * sizeof(size_t));
-            void** doc_addr = (void**)(priv0 + assume_sizeof_QObjectPrivate);
-            QTextDocument* doc = (QTextDocument*) *doc_addr;
-            // set wrap mode for doc
-            QTextOption opt = doc->defaultTextOption();
-            opt.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
-            doc->setDefaultTextOption(opt);
-            // get the QAbstractTextDocumentLayout* of doc,
-            // replace its vtable,
-            // override "void draw(QPainter, const PaintContext&)"
-            QAbstractTextDocumentLayout* l = doc->documentLayout();
-            void** vptr_addr = (void**) l;
-            if (workaround_tdl_vptr == nullptr) {
-                void* old_vptr = *vptr_addr;
-                int buf_size = 64;
-                size_t* buf = new size_t[buf_size];
-                // copy vtable to buf,
-                // start from 1st method (RTTI is ignored: we use qobject_cast)
-                size_t* p = (size_t*) old_vptr;
-                for (int i = 0; i < buf_size; i += 1) {
-                    size_t m = *p;
-                    if (m == 0) { break; }
-                    buf[i] = m;
-                    p++;
-                }
-                #if defined(__GNUC__) || defined(__MINGW32__)
-                // Q_OBJECT(3), dtor(Itanium:2), QObject(7)
-                size_t assume_draw_index = 12;
-                #endif
-                tdl_draw = (tdl_draw_t)(void*) buf[assume_draw_index];
-                buf[assume_draw_index] = (size_t)(void*) WorkaroundTdlDraw;
-                workaround_tdl_vptr = (void*) buf;
-            }
-            *vptr_addr = workaround_tdl_vptr;
-        }
-        ushort* align_addr;
-        if (FindAlignAddr(&align_addr)) {
-            *align_addr = (*align_addr | Qt::TextWrapAnywhere);
-        }
         setTextFormat(format);
         setText(text);
         setAlignment(Qt::AlignLeft | Qt::AlignTop);
+        setTextInteractionFlags(Qt::TextSelectableByMouse | textInteractionFlags());
     }
     virtual ~TextView() {}
     virtual QSize minimumSizeHint() const override {
@@ -591,55 +532,6 @@ public:
         QSize size = QLabel::minimumSizeHint();
         size.setWidth(0);
         return size;
-    }
-protected:
-    // find member variable "ushort align;" in QLabelPrivate
-    // reference: https://code.woboq.org/qt5/qtbase/src/widgets/widgets/qlabel_p.h.html#QLabelPrivate::align
-    bool FindAlignAddr(ushort** out) {
-        Qt::Alignment align = alignment();
-        void* d_raw = (void*) d_ptr.data();
-        ushort* p = reinterpret_cast<ushort*>(d_raw);
-        for (int i = 0; i < 1024; i += 1) {
-            setAlignment(Qt::AlignLeft);
-            ushort a = *p;
-            setAlignment(Qt::AlignRight);
-            ushort b = *p;
-            if (a != b) {
-                *out = p;
-                setAlignment(align);
-                return true;
-            }
-            p++;
-        }
-        setAlignment(align);
-        return false;
-    }
-    // find member variable "QWidgetTextControl *control;" in QLabelPrivate
-    // reference: https://code.woboq.org/qt5/qtbase/src/widgets/widgets/qlabel_p.h.html#QLabelPrivate::control
-    bool FindControlAddr(void*** out) {
-        Qt::TextInteractionFlags flags = textInteractionFlags();
-        void* d_raw = (void*) d_ptr.data();
-        void** p = reinterpret_cast<void**>(d_raw);
-        for (int i = 0; i < 512; i += 1) {
-            // reference: https://code.woboq.org/qt6/qtbase/src/widgets/widgets/qlabel_p.h.html#_ZNK13QLabelPrivate15needTextControlEv
-            // needTextControl() = false
-            setTextInteractionFlags(Qt::TextInteractionFlag());
-            void* a = *p;
-            // needTextControl() = true
-            setTextInteractionFlags(Qt::TextSelectableByMouse);
-            setFocusPolicy(Qt::NoFocus);
-            void* b = *p;
-            // compare
-            if (a != b) {
-                // if ((size_t(b) < 0x100) || !(size_t(b) & 0xFFFFFFFF)) { break; }
-                *out = p;
-                setTextInteractionFlags(flags);
-                return true;
-            }
-            p++;
-        }
-        setTextInteractionFlags(flags);
-        return false;
     }
 };
 
