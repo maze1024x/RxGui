@@ -5,7 +5,7 @@ import (
     "errors"
     "unicode/utf16"
     "rxgui/interpreter/lang/source"
-	"rxgui/interpreter/lang/textual/syntax"
+    "rxgui/interpreter/lang/textual/syntax"
 )
 
 

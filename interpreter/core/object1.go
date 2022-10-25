@@ -1,21 +1,21 @@
 package core
 
 import (
-	"time"
-	"regexp"
-	"math/big"
-	"rxgui/util/ctn"
+    "time"
+    "regexp"
+    "math/big"
+    "rxgui/util/ctn"
 )
 
 
 type Object =
-	*ObjectImpl
+    *ObjectImpl
 //
 type ObjectImpl interface {
-	impl(*ObjectImpl)
+    impl(*ObjectImpl)
 }
 func Obj(o ObjectImpl) Object {
-	return &o
+    return &o
 }
 
 
@@ -63,8 +63,8 @@ func (Interface) impl(Object) {}
 func (Lambda) impl(Object) {}
 
 type Interface struct {
-	UnderlyingObject  Object
-	DispatchTable     *DispatchTable
+    UnderlyingObject  Object
+    DispatchTable     *DispatchTable
 }
 type Lambda struct { Call func(Object)(Object) }
 
@@ -91,11 +91,11 @@ func (Record) impl(Object) {}
 func (Union) impl(Object) {}
 
 type Record struct {
-	Objects  [] Object
+    Objects  [] Object
 }
 type Union struct {
-	Index   int
-	Object  Object
+    Index   int
+    Object  Object
 }
 
 
