@@ -1,7 +1,0 @@
-namespace ::
-
-entry {
-    ShowInfo('Hello World')
-}
-
-
