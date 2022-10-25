@@ -1,7 +1,7 @@
 package program
 
 import (
-	"rxgui/standalone/ctn"
+	"rxgui/util/ctn"
 	"rxgui/interpreter/core"
 )
 

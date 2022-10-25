@@ -4,8 +4,8 @@ import (
     "fmt"
     "errors"
     "unicode/utf16"
-    "rxgui/lang/source"
-	"rxgui/lang/textual/syntax"
+    "rxgui/interpreter/lang/source"
+	"rxgui/interpreter/lang/textual/syntax"
 )
 
 

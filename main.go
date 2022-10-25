@@ -4,16 +4,15 @@ import (
     "fmt"
     "os"
     "runtime"
-    "rxgui/standalone/qt"
-    "rxgui/standalone/util"
-    "rxgui/standalone/util/argv"
-    "rxgui/standalone/util/fatal"
-    "rxgui/lang/textual"
-    "rxgui/lang/textual/syntax"
+    "rxgui/qt"
+    "rxgui/util"
+    "rxgui/util/argv"
+    "rxgui/util/fatal"
     "rxgui/interpreter"
     "rxgui/interpreter/core"
     "rxgui/interpreter/debugging"
-    "rxgui/support/atom"
+    "rxgui/interpreter/lang/textual"
+    "rxgui/interpreter/lang/textual/syntax"
 )
 
 
@@ -30,10 +29,6 @@ type Args struct {
 var Commands = map[string] func(*Args) {
     "version": func(_ *Args) {
         fmt.Println(Version)
-    },
-    "atom": func(_ *Args) {
-        var err = atom.LangServer(os.Stdin, os.Stdout, os.Stderr)
-        if err != nil { fatal.ThrowError(err) }
     },
     "parse": func(args *Args) {
         var L = len(args.Positional)

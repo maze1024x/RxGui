@@ -3,12 +3,12 @@ package compiler
 import (
 	"fmt"
 	"strings"
-	"rxgui/standalone/util/richtext"
-	"rxgui/lang/source"
-	"rxgui/lang/textual/ast"
-	"rxgui/lang/textual/syntax"
-	"rxgui/lang/textual/parser"
-	"rxgui/lang/textual/transformer"
+	"rxgui/util/richtext"
+	"rxgui/interpreter/lang/source"
+	"rxgui/interpreter/lang/textual/ast"
+	"rxgui/interpreter/lang/textual/syntax"
+	"rxgui/interpreter/lang/textual/parser"
+	"rxgui/interpreter/lang/textual/transformer"
 )
 
 

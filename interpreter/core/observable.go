@@ -1,6 +1,6 @@
 package core
 
-import ( gctx "context"; "rxgui/standalone/ctn" )
+import ( gctx "context"; "rxgui/util/ctn" )
 
 
 type Observable func(DataPublisher)

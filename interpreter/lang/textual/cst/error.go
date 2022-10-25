@@ -6,9 +6,9 @@ import (
 	"strings"
 	"unicode"
 	"unicode/utf16"
-	"rxgui/standalone/util/richtext"
-	"rxgui/lang/source"
-	"rxgui/lang/textual/scanner"
+	"rxgui/util/richtext"
+	"rxgui/interpreter/lang/source"
+	"rxgui/interpreter/lang/textual/scanner"
 )
 
 

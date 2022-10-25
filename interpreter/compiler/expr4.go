@@ -1,10 +1,10 @@
 package compiler
 
 import (
-	"rxgui/standalone/ctn"
-	"rxgui/lang/source"
-	"rxgui/lang/typsys"
-	"rxgui/lang/textual/ast"
+	"rxgui/util/ctn"
+	"rxgui/interpreter/lang/source"
+	"rxgui/interpreter/lang/typsys"
+	"rxgui/interpreter/lang/textual/ast"
 	"rxgui/interpreter/program"
 )
 

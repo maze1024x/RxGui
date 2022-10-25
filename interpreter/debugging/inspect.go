@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"rxgui/standalone/util/richtext"
-	"rxgui/lang/source"
-	"rxgui/lang/typsys"
+	"rxgui/util/richtext"
+	"rxgui/interpreter/lang/source"
+	"rxgui/interpreter/lang/typsys"
 	"rxgui/interpreter/core"
 	"rxgui/interpreter/compiler"
 )

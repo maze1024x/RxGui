@@ -2,7 +2,7 @@ package ast
 
 import (
 	"strings"
-	"rxgui/lang/source"
+	"rxgui/interpreter/lang/source"
 )
 
 

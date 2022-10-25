@@ -2,8 +2,8 @@ package core
 
 import (
 	"time"
-	"rxgui/standalone/qt"
-	"rxgui/standalone/ctn"
+	"rxgui/qt"
+	"rxgui/util/ctn"
 )
 
 

@@ -3,9 +3,9 @@ package core
 import (
 	"fmt"
 	"errors"
-	"rxgui/standalone/qt"
-	"rxgui/standalone/ctn"
-	"rxgui/standalone/util/pseudounion"
+	"rxgui/qt"
+	"rxgui/util/ctn"
+	"rxgui/util/pseudounion"
 )
 
 

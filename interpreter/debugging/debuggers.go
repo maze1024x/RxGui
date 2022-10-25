@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"time"
 	"strconv"
-	"rxgui/standalone/util"
-	"rxgui/standalone/util/richtext"
-	"rxgui/lang/typsys"
+	"rxgui/util"
+	"rxgui/util/richtext"
+	"rxgui/interpreter/lang/typsys"
 	"rxgui/interpreter/core"
 	"rxgui/interpreter/compiler"
-	"rxgui/support/tools"
+	"rxgui/misc/tools"
 )
 
 

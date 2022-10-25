@@ -1,10 +1,10 @@
 package parser
 
 import "fmt"
-import "rxgui/lang/source"
-import "rxgui/lang/textual/cst"
-import "rxgui/lang/textual/syntax"
-import "rxgui/lang/textual/scanner"
+import "rxgui/interpreter/lang/source"
+import "rxgui/interpreter/lang/textual/cst"
+import "rxgui/interpreter/lang/textual/syntax"
+import "rxgui/interpreter/lang/textual/scanner"
 
 
 /**

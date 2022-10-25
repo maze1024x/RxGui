@@ -1,6 +1,6 @@
 package typsys
 
-import "rxgui/standalone/ctn"
+import "rxgui/util/ctn"
 
 
 func Match(x Type, y Type, s *InferringState) (bool, *InferringState) {

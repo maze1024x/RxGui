@@ -1,7 +1,7 @@
 package compiler
 
 import (
-	"rxgui/lang/typsys"
+	"rxgui/interpreter/lang/typsys"
 	"rxgui/interpreter/program"
 )
 

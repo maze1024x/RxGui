@@ -14,8 +14,8 @@ import (
 	"os/exec"
 	"archive/zip"
 	"path/filepath"
-	"rxgui/standalone/qt"
-	"rxgui/standalone/util/fatal"
+	"rxgui/qt"
+	"rxgui/util/fatal"
 	"rxgui/interpreter"
 	"rxgui/interpreter/compiler"
 )

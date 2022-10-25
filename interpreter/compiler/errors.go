@@ -3,8 +3,8 @@ package compiler
 import (
 	"fmt"
 	"strings"
-	"rxgui/standalone/util/richtext"
-	"rxgui/lang/source"
+	"rxgui/util/richtext"
+	"rxgui/interpreter/lang/source"
 )
 
 

@@ -1,6 +1,6 @@
 package ctn
 
-import "rxgui/standalone/util/backports/constraints"
+import "rxgui/util/backports/constraints"
 
 
 type Compare[T any] (

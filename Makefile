@@ -1,11 +1,11 @@
 ifdef OS
 	QMAKE_RELEASE = release
-	QTBINDING_DLL = standalone/qt/build/release/qtbinding.dll
+	QTBINDING_DLL = qt/build/release/qtbinding.dll
 	EXENAME = rxgui.exe
 	DLLNAME = rxgui.dll
 else
 	QMAKE_RELEASE = .
-	QTBINDING_DLL = standalone/qt/build/libqtbinding*
+	QTBINDING_DLL = qt/build/libqtbinding*
 	EXENAME = rxgui
 	DLLNAME = rxgui.so
 endif
@@ -29,22 +29,22 @@ check:
 
 qt:
 	@echo -e '\033[1mCompiling CGO Qt Binding...\033[0m'
-	cd standalone/qt/build && qmake ../qtbinding/qtbinding.pro && $(MAKE)
+	cd qt/build && qmake ../qtbinding/qtbinding.pro && $(MAKE)
 	cp -P $(QTBINDING_DLL) build/
 
 qt-clean:
-	cd standalone/qt/build && $(MAKE) clean
-	rm standalone/qt/build/Makefile
+	cd qt/build && $(MAKE) clean
+	rm qt/build/Makefile
 
 crash-report:
 	@echo -e '\033[1mCompiling Tool: Crash Report...\033[0m'
-	cd support/tools/crash_report/build && qmake ../crash_report.pro && $(MAKE)
-	cp support/tools/crash_report/build/$(QMAKE_RELEASE)/crash_report* build/
+	cd misc/tools/crash_report/build && qmake ../crash_report.pro && $(MAKE)
+	cp misc/tools/crash_report/build/$(QMAKE_RELEASE)/crash_report* build/
 
 naive-debugger:
 	@echo -e '\033[1mCompiling Tool: Naive Debugger...\033[0m'
-	cd support/tools/naive_debugger/build && qmake ../naive_debugger.pro && $(MAKE)
-	cp support/tools/naive_debugger/build/$(QMAKE_RELEASE)/naive_debugger* build/
+	cd misc/tools/naive_debugger/build && qmake ../naive_debugger.pro && $(MAKE)
+	cp misc/tools/naive_debugger/build/$(QMAKE_RELEASE)/naive_debugger* build/
 
 tools: crash-report naive-debugger
 	$(NOOP)

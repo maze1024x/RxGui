@@ -3,9 +3,9 @@ package parser
 import "fmt"
 import "strings"
 import "unicode/utf8"
-import "rxgui/lang/source"
-import "rxgui/lang/textual/cst"
-import "rxgui/lang/textual/syntax"
+import "rxgui/interpreter/lang/source"
+import "rxgui/interpreter/lang/textual/cst"
+import "rxgui/interpreter/lang/textual/syntax"
 
 
 func GetANSIColor(n int) int {

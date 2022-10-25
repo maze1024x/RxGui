@@ -1,7 +1,7 @@
 package source
 
 import (
-	"rxgui/standalone/util/richtext"
+	"rxgui/util/richtext"
 )
 
 

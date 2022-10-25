@@ -1,6 +1,6 @@
 package ctn
 
-import "rxgui/standalone/util/backports/constraints"
+import "rxgui/util/backports/constraints"
 
 
 type Map[K any, V any] struct {

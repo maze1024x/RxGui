@@ -1,6 +1,6 @@
 package core
 
-import "rxgui/standalone/ctn"
+import "rxgui/util/ctn"
 
 
 func Lens1FromRecord(object Object, index int) Object {

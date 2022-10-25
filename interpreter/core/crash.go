@@ -3,8 +3,8 @@ package core
 import (
 	"os"
 	"fmt"
-	"rxgui/standalone/util/richtext"
-	"rxgui/support/tools"
+	"rxgui/util/richtext"
+	"rxgui/misc/tools"
 )
 
 

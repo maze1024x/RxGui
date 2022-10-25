@@ -1,6 +1,6 @@
 package ast
 
-import "rxgui/lang/source"
+import "rxgui/interpreter/lang/source"
 
 
 type Code = source.Code

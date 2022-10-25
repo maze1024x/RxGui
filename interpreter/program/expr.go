@@ -3,10 +3,10 @@ package program
 import (
 	"regexp"
 	"math/big"
-	"rxgui/standalone/ctn"
+	"rxgui/util/ctn"
 	"rxgui/interpreter/core"
-	"rxgui/lang/source"
-	"rxgui/lang/typsys"
+	"rxgui/interpreter/lang/source"
+	"rxgui/interpreter/lang/typsys"
 )
 
 

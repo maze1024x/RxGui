@@ -4,7 +4,7 @@ import (
 	"testing"
 	"os"
 	"path/filepath"
-	"rxgui/lang/textual/syntax"
+	"rxgui/interpreter/lang/textual/syntax"
 )
 
 

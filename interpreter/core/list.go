@@ -1,6 +1,6 @@
 package core
 
-import "rxgui/standalone/ctn"
+import "rxgui/util/ctn"
 
 
 type List struct { Head *ListNode; Size uint }

@@ -1,8 +1,8 @@
 package program
 
 import (
-	"rxgui/lang/source"
-	"rxgui/lang/typsys"
+	"rxgui/interpreter/lang/source"
+	"rxgui/interpreter/lang/typsys"
 	"rxgui/interpreter/core"
 )
 

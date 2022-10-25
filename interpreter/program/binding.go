@@ -2,9 +2,9 @@ package program
 
 import (
 	"unsafe"
-	"rxgui/standalone/ctn"
-	"rxgui/lang/source"
-	"rxgui/lang/typsys"
+	"rxgui/util/ctn"
+	"rxgui/interpreter/lang/source"
+	"rxgui/interpreter/lang/typsys"
 )
 
 

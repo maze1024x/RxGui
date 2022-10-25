@@ -4,11 +4,11 @@ import (
 	"io"
 	"fmt"
 	"reflect"
-	"rxgui/lang/source"
-	"rxgui/lang/textual/scanner"
-	"rxgui/lang/textual/syntax"
-	"rxgui/lang/textual/parser"
-	"rxgui/lang/textual/transformer"
+	"rxgui/interpreter/lang/source"
+	"rxgui/interpreter/lang/textual/scanner"
+	"rxgui/interpreter/lang/textual/syntax"
+	"rxgui/interpreter/lang/textual/parser"
+	"rxgui/interpreter/lang/textual/transformer"
 )
 
 func DebugParser(file io.Reader, name string, root syntax.Id) bool {

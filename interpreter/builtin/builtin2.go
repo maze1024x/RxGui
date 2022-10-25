@@ -18,10 +18,10 @@ import (
 	"math/rand"
 	"unicode/utf8"
 	"path/filepath"
-	"rxgui/standalone/qt"
-	"rxgui/standalone/ctn"
-	"rxgui/standalone/util"
-	"rxgui/standalone/util/pseudounion"
+	"rxgui/qt"
+	"rxgui/util/ctn"
+	"rxgui/util"
+	"rxgui/util/pseudounion"
 	"rxgui/interpreter/core"
 )
 

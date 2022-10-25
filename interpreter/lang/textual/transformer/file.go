@@ -2,10 +2,10 @@ package transformer
 
 import (
 	"fmt"
-	"rxgui/standalone/util/richtext"
-	"rxgui/lang/source"
-	"rxgui/lang/textual/cst"
-	"rxgui/lang/textual/scanner"
+	"rxgui/util/richtext"
+	"rxgui/interpreter/lang/source"
+	"rxgui/interpreter/lang/textual/cst"
+	"rxgui/interpreter/lang/textual/scanner"
 )
 
 type File struct {

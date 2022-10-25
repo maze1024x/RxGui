@@ -5,10 +5,10 @@ import (
 	"strings"
 	"strconv"
 	"unicode/utf8"
-	"rxgui/standalone/util"
-	"rxgui/lang/source"
-	"rxgui/lang/typsys"
-	"rxgui/lang/textual/ast"
+	"rxgui/util"
+	"rxgui/interpreter/lang/source"
+	"rxgui/interpreter/lang/typsys"
+	"rxgui/interpreter/lang/textual/ast"
 	"rxgui/interpreter/program"
 )
 

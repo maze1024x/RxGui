@@ -2,8 +2,8 @@ package source
 
 import (
 	"fmt"
-	"rxgui/standalone/ctn"
-	"rxgui/standalone/util/richtext"
+	"rxgui/util/ctn"
+	"rxgui/util/richtext"
 )
 
 

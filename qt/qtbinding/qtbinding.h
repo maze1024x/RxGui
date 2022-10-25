@@ -165,7 +165,6 @@ extern "C" {
     EXPORT void QtQuit();
     EXPORT QtString QtNewUUID();
     EXPORT int QtFontSize();
-    EXPORT void* QtLoadWidget(const char* definition, const char* directory);
     EXPORT void* QtObjectFindChild(void* object_ptr, const char* name);
     EXPORT void* QtWidgetFindChildWidget(void* widget_ptr, const char* name);
     EXPORT void* QtWidgetFindChildAction(void* widget_ptr, const char* name);

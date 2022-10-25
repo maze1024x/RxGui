@@ -3,8 +3,8 @@ package core
 import (
 	"fmt"
 	"strconv"
-	"rxgui/standalone/ctn"
-	"rxgui/lang/typsys"
+	"rxgui/util/ctn"
+	"rxgui/interpreter/lang/typsys"
 )
 
 

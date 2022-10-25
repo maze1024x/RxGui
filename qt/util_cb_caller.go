@@ -10,7 +10,7 @@ void CgoCallbackCaller(uint64_t id) {
 }
 */
 import "C"
-import "rxgui/standalone/qt/cgohelper"
+import "rxgui/qt/cgohelper"
 
 var cgo_callback_caller = C.CgoCallbackCaller_t(C.CgoCallbackCaller)
 

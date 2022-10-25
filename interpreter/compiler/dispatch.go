@@ -2,9 +2,9 @@ package compiler
 
 import (
 	"fmt"
-	"rxgui/standalone/ctn"
-	"rxgui/lang/source"
-	"rxgui/lang/typsys"
+	"rxgui/util/ctn"
+	"rxgui/interpreter/lang/source"
+	"rxgui/interpreter/lang/typsys"
 	"rxgui/interpreter/program"
 )
 

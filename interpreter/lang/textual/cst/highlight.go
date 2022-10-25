@@ -1,8 +1,8 @@
 package cst
 
 import (
-	"rxgui/lang/textual/scanner"
-	"rxgui/lang/textual/syntax"
+	"rxgui/interpreter/lang/textual/scanner"
+	"rxgui/interpreter/lang/textual/syntax"
 )
 
 

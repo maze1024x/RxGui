@@ -1,6 +1,6 @@
 package typsys
 
-import "rxgui/lang/source"
+import "rxgui/interpreter/lang/source"
 
 
 type TypeDef struct {

@@ -1,9 +1,9 @@
 package core
 
 import (
-	"rxgui/standalone/ctn"
-	"rxgui/standalone/qt"
-	"rxgui/standalone/util/pseudounion"
+	"rxgui/util/ctn"
+	"rxgui/qt"
+	"rxgui/util/pseudounion"
 )
 
 

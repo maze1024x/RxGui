@@ -7,7 +7,6 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QFileDialog>
-#include <QUiLoader>
 #include <QBuffer>
 #include <QByteArray>
 #include <QString>
@@ -40,13 +39,6 @@
 #include "util.hpp"
 #include "qtbinding.h"
 
-
-class UiLoader: public QUiLoader {
-public:
-    virtual QWidget* createWidget(const QString &className, QWidget *parent = nullptr, const QString &name = QString()) override {
-        return QUiLoader::createWidget(className, parent, name);
-    }
-};
 
 const int QtEventMove = QEvent::Move;
 const int QtEventResize = QEvent::Resize;
@@ -130,8 +122,6 @@ static QApplication*
     app = nullptr;
 static CallbackExecutor*
     executor = nullptr;
-static UiLoader*
-    loader = nullptr;
 static bool
     initialized = false;
 
@@ -148,7 +138,6 @@ void QtInit() {
         app->setFont(f);
         qRegisterMetaType<callback_t>();
         executor = new CallbackExecutor();
-        loader = new UiLoader();
         initialized = true;
     }
 }
@@ -172,14 +161,6 @@ int QtFontSize() {
     return Get1remPixels();
 }
 
-void* QtLoadWidget(const char* definition, const char* directory) {
-    QByteArray bytes(definition);
-    QBuffer buf(&bytes);
-    QDir dir(directory);
-    loader->setWorkingDirectory(dir);
-    QWidget* widget = loader->load(&buf, nullptr);
-    return (void*) widget;
-}
 void* QtObjectFindChild(void* object_ptr, const char* name) {
     QObject* obj = (QObject*) object_ptr;
     QObject* child = obj->findChild<QObject*>(QString(name));

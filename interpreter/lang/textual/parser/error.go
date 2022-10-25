@@ -1,9 +1,9 @@
 package parser
 
 import (
-    "rxgui/standalone/util/richtext"
-    "rxgui/lang/textual/cst"
-    "rxgui/lang/textual/syntax"
+    "rxgui/util/richtext"
+    "rxgui/interpreter/lang/textual/cst"
+    "rxgui/interpreter/lang/textual/syntax"
 )
 
 type Error struct {

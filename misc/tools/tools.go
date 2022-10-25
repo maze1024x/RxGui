@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"encoding/json"
-	"rxgui/standalone/util"
+	"rxgui/util"
 )
 
 

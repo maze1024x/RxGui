@@ -1,9 +1,9 @@
 package core
 
 import (
-	"rxgui/standalone/util"
-	"rxgui/standalone/util/richtext"
-	"rxgui/lang/typsys"
+	"rxgui/util"
+	"rxgui/util/richtext"
+	"rxgui/interpreter/lang/typsys"
 )
 
 type Debugger interface {

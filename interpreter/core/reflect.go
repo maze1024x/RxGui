@@ -9,8 +9,8 @@ import (
 	"reflect"
 	"math/big"
 	"encoding/json"
-	"rxgui/lang/source"
-	"rxgui/lang/typsys"
+	"rxgui/interpreter/lang/source"
+	"rxgui/interpreter/lang/typsys"
 )
 
 

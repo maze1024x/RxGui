@@ -9,7 +9,6 @@ import "C"
 
 import (
     _ "embed"
-    "errors"
     "unsafe"
     "reflect"
     "strings"
@@ -1105,26 +1104,5 @@ func makeIcon(name string, ctx Pkg) C.QtIcon {
     return icon
 }
 const FileIconNamePrefix = "file:"
-
-func loadWidget(ui_xml string, base_dir string, ctx Pkg) (Widget, error) {
-    var pkg, dispose = CreatePkg(); defer dispose()
-    var ptr = C.QtLoadWidget(str(ui_xml, pkg), str(base_dir, pkg))
-    if ptr != nil {
-        pushObjectDeletion(ctx, ptr)
-        return Widget{Object{ptr}}, nil
-    } else {
-        ctx.push(func() {})
-        return Widget{}, errors.New("failed to load widget from ui xml")
-    }
-}
-func findChild(obj Object, name string) (Object, bool) {
-    var pkg, dispose = CreatePkg(); defer dispose()
-    var ptr = C.QtObjectFindChild(obj.ptr, str(name, pkg))
-    if ptr != nil {
-        return Object{ptr}, true
-    } else {
-        return Object{}, false
-    }
-}
 
 

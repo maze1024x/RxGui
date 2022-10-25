@@ -4,7 +4,7 @@ import (
 	"time"
 	"regexp"
 	"math/big"
-	"rxgui/standalone/ctn"
+	"rxgui/util/ctn"
 )
 
 

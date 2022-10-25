@@ -4,8 +4,8 @@ import (
     "fmt"
     "reflect"
     "strings"
-    "rxgui/lang/textual/ast"
-    "rxgui/lang/textual/syntax"
+    "rxgui/interpreter/lang/textual/ast"
+    "rxgui/interpreter/lang/textual/syntax"
 )
 
 
