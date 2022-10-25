@@ -1,0 +1,34 @@
+namespace ::
+
+
+type DataItem record {
+    Key    String,
+    Value  Int
+}
+const FakeDataSource $[List[DataItem]] {
+    let keys = List('a','b','c','x','y','z','u','v','w'),
+    @concat-map _ = SetInterval(1000),
+    @await n = Random(8),
+    @await keys = (Shuffle(keys) map { keys => (keys take n) }),
+    ForkJoin({
+        @map key = keys,
+        @map value = Random(50),
+        new DataItem(key,value)
+    })
+}
+
+entry {
+    ShowWindow({
+        let data = FakeDataSource,
+        @use view = ListView(data, { (key,_) => key }, { (item,info) => {
+            @use lk = Label($(info.Key)),
+            @use lv = Label((item.Value map { v => v.String })),
+            @use lp = Label((info.Pos map { (i,n) => String(i,'/',n) })),
+            @use row = WrapperWithMargins(Row(lk.Widget, lv.Widget, lp.Widget)),
+            ItemView(row.Widget)
+        }}),
+        Window($('Data'), Column(view.Widget))
+    })
+}
+
+
