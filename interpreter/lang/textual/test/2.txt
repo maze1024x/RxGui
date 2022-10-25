@@ -1,5 +1,0 @@
-namespace foo ::
-
-entry {EXPR}
-
-
