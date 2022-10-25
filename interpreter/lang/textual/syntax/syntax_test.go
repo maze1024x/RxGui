@@ -9,158 +9,13 @@ import (
 )
 
 
-func TestOutputIntellijBnfGrammar(_ *testing.T) {
-    outputGeneratedIntellijBnfGrammar()
-}
 func TestOutputTreeSitterGrammar(_ *testing.T) {
     outputGeneratedTreeSitterGrammar()
 }
-
-func outputGeneratedIntellijBnfGrammar() {
-    var lex_mapping = make(map[string] [] string)
-    var tokens_mapping = make(map[string] string)
-    for _, token := range __Tokens {
-        var name = token.Name
-        if ((name == "Blank") || (name == "LF")) {
-            name = "Blank"
-        }
-        var output_name string
-        if name == "Blank" {
-            output_name = "WHITE_SPACE"
-        } else if !(unicode.IsLetter(rune(name[0]))) {
-            var buf strings.Builder
-            for _, ch := range name {
-                buf.WriteString(fmt.Sprintf("%d00", ch))
-            }
-            var suffix = buf.String()
-            output_name = ("SYM" + suffix)
-        } else {
-            if name == "Text" {
-                // workaround: getText() conflicts with inherited method
-                output_name = "TOKEN_TEXT"
-            } else if name == "Name" {
-                // workaround: getName() conflicts with inherited method
-                output_name = "TOKEN_NAME"
-            } else {
-                output_name = strings.ToUpper(name)
-            }
-        }
-        tokens_mapping[name] = output_name
-        var content = strings.TrimPrefix(token.Pattern.String(), "^")
-        lex_mapping[name] = append(lex_mapping[name], content)
-    }
-    println("tokens=[")
-    var lex_visited = make(map[string] bool)
-    for _, token := range __Tokens {
-        var name = token.Name
-        if lex_visited[name] { continue }; lex_visited[name] = true
-        var contents, exists = lex_mapping[name]
-        if !(exists) { continue }
-        var output_name = tokens_mapping[name]
-        var tmp = strings.Join(contents, "|")
-        tmp = strings.ReplaceAll(tmp, "\"", "\\\"")
-        tmp = strings.ReplaceAll(tmp, "'", "\\'")
-        var wrapped = fmt.Sprintf("\"regexp:%s\"", tmp)
-        println(fmt.Sprintf("    %s=%s", output_name, wrapped))
-    }
-    println("]")
-    const replPartsPrefix = "repl_"
-    var id_list = make([] int, 0)
-    for id := range rules {
-        id_list = append(id_list, int(id))
-    }
-    sort.Ints(id_list)
-    for _, id := range id_list {
-        var id = Id(id)
-        var rule = rules[id]
-        var rule_name = mapId2Name[id]
-        if rule_name == "" { panic("something went wrong") }
-        if rule.Generated {
-            continue
-        }
-        if strings.HasPrefix(rule_name, replPartsPrefix) {
-            continue
-        }
-        var conflict = func(rule_name string) bool {
-            // conflict with keyword part name (leading @ stripped)
-            var _, a = mapName2Id["@" + rule_name]
-            // conflict with token part name (in case-insensitive context)
-            var _, b = mapName2Id[strings.ToUpper(rule_name[:1]) + rule_name[1:]]
-            return (a || b || (rule_name == "string"))
-        }
-        const conflict_prefix = "node_"
-        if conflict(rule_name) {
-            rule_name = (conflict_prefix + rule_name)
-        }
-        var refer_part = func(part_name string) string {
-            switch GetPartType(part_name) {
-            case MatchKeyword:
-                return strings.TrimPrefix(part_name, "@")
-            case MatchToken:
-                return tokens_mapping[part_name]
-            case Recursive:
-                if conflict(part_name) {
-                    return (conflict_prefix + part_name)
-                } else {
-                    return part_name
-                }
-            default:
-                panic("impossible branch")
-            }
-        }
-        var branch_expr = make([] string, len(rule.Branches))
-        for i, b := range rule.Branches {
-            var part_expr = make([] string, len(b.Parts))
-            for j, p := range b.Parts {
-                var part_name = mapId2Name[p.Id]
-                var part_rule = rules[p.Id]
-                switch p.PartType {
-                case MatchKeyword, MatchToken:
-                    part_expr[j] = refer_part(part_name)
-                case Recursive:
-                    if part_rule.Generated {
-                        var info = part_rule.GenInfo
-                        switch info.Kind {
-                        case RuleGenList:
-                            var sep = info.Sep
-                            var nullable = part_rule.Nullable
-                            var ref = refer_part(info.Item)
-                            if sep == "" {
-                                if nullable { ref += "*" } else { ref += "+" }
-                            } else {
-                                // assume sep is a keyword for now
-                                var sep_output_name = tokens_mapping[sep]
-                                var tail = (sep_output_name + " " + ref)
-                                ref += (" { " + tail + " }*")
-                                if nullable { ref = ("[ " + ref + " ]") }
-                            }
-                            part_expr[j] = ref
-                        case RuleGenListTail:
-                            panic("something went wrong")
-                        case RuleGenOptional:
-                            var ref = refer_part(info.Item)
-                            ref += "?"
-                            part_expr[j] = ref
-                        default:
-                            panic("impossible branch")
-                        }
-                    } else {
-                        var ref = refer_part(part_name)
-                        if part_rule.Nullable {
-                            ref += "?"
-                        }
-                        part_expr[j] = ref
-                    }
-                default:
-                    panic("impossible branch")
-                }
-            }
-            branch_expr[i] = strings.Join(part_expr, " ")
-        }
-        var expr = strings.Join(branch_expr, " | ")
-        println(fmt.Sprintf("%s ::= %s", rule_name, expr))
-    }
+func TestOutputIntellijBnfGrammar(_ *testing.T) {
+    outputGeneratedIntellijBnfGrammar()
 }
+
 func outputGeneratedTreeSitterGrammar() {
     println("// TOKENS")
     var lex_mapping = make(map[string] [] string)
@@ -368,6 +223,151 @@ func outputGeneratedTreeSitterGrammar() {
         }
         buf.WriteString(",")
         println(buf.String())
+    }
+}
+func outputGeneratedIntellijBnfGrammar() {
+    var lex_mapping = make(map[string] [] string)
+    var tokens_mapping = make(map[string] string)
+    for _, token := range __Tokens {
+        var name = token.Name
+        if ((name == "Blank") || (name == "LF")) {
+            name = "Blank"
+        }
+        var output_name string
+        if name == "Blank" {
+            output_name = "WHITE_SPACE"
+        } else if !(unicode.IsLetter(rune(name[0]))) {
+            var buf strings.Builder
+            for _, ch := range name {
+                buf.WriteString(fmt.Sprintf("%d00", ch))
+            }
+            var suffix = buf.String()
+            output_name = ("SYM" + suffix)
+        } else {
+            if name == "Text" {
+                // workaround: getText() conflicts with inherited method
+                output_name = "TOKEN_TEXT"
+            } else if name == "Name" {
+                // workaround: getName() conflicts with inherited method
+                output_name = "TOKEN_NAME"
+            } else {
+                output_name = strings.ToUpper(name)
+            }
+        }
+        tokens_mapping[name] = output_name
+        var content = strings.TrimPrefix(token.Pattern.String(), "^")
+        lex_mapping[name] = append(lex_mapping[name], content)
+    }
+    println("tokens=[")
+    var lex_visited = make(map[string] bool)
+    for _, token := range __Tokens {
+        var name = token.Name
+        if lex_visited[name] { continue }; lex_visited[name] = true
+        var contents, exists = lex_mapping[name]
+        if !(exists) { continue }
+        var output_name = tokens_mapping[name]
+        var tmp = strings.Join(contents, "|")
+        tmp = strings.ReplaceAll(tmp, "\"", "\\\"")
+        tmp = strings.ReplaceAll(tmp, "'", "\\'")
+        var wrapped = fmt.Sprintf("\"regexp:%s\"", tmp)
+        println(fmt.Sprintf("    %s=%s", output_name, wrapped))
+    }
+    println("]")
+    const replPartsPrefix = "repl_"
+    var id_list = make([] int, 0)
+    for id := range rules {
+        id_list = append(id_list, int(id))
+    }
+    sort.Ints(id_list)
+    for _, id := range id_list {
+        var id = Id(id)
+        var rule = rules[id]
+        var rule_name = mapId2Name[id]
+        if rule_name == "" { panic("something went wrong") }
+        if rule.Generated {
+            continue
+        }
+        if strings.HasPrefix(rule_name, replPartsPrefix) {
+            continue
+        }
+        var conflict = func(rule_name string) bool {
+            // conflict with keyword part name (leading @ stripped)
+            var _, a = mapName2Id["@" + rule_name]
+            // conflict with token part name (in case-insensitive context)
+            var _, b = mapName2Id[strings.ToUpper(rule_name[:1]) + rule_name[1:]]
+            return (a || b || (rule_name == "string"))
+        }
+        const conflict_prefix = "node_"
+        if conflict(rule_name) {
+            rule_name = (conflict_prefix + rule_name)
+        }
+        var refer_part = func(part_name string) string {
+            switch GetPartType(part_name) {
+            case MatchKeyword:
+                return strings.TrimPrefix(part_name, "@")
+            case MatchToken:
+                return tokens_mapping[part_name]
+            case Recursive:
+                if conflict(part_name) {
+                    return (conflict_prefix + part_name)
+                } else {
+                    return part_name
+                }
+            default:
+                panic("impossible branch")
+            }
+        }
+        var branch_expr = make([] string, len(rule.Branches))
+        for i, b := range rule.Branches {
+            var part_expr = make([] string, len(b.Parts))
+            for j, p := range b.Parts {
+                var part_name = mapId2Name[p.Id]
+                var part_rule = rules[p.Id]
+                switch p.PartType {
+                case MatchKeyword, MatchToken:
+                    part_expr[j] = refer_part(part_name)
+                case Recursive:
+                    if part_rule.Generated {
+                        var info = part_rule.GenInfo
+                        switch info.Kind {
+                        case RuleGenList:
+                            var sep = info.Sep
+                            var nullable = part_rule.Nullable
+                            var ref = refer_part(info.Item)
+                            if sep == "" {
+                                if nullable { ref += "*" } else { ref += "+" }
+                            } else {
+                                // assume sep is a keyword for now
+                                var sep_output_name = tokens_mapping[sep]
+                                var tail = (sep_output_name + " " + ref)
+                                ref += (" { " + tail + " }*")
+                                if nullable { ref = ("[ " + ref + " ]") }
+                            }
+                            part_expr[j] = ref
+                        case RuleGenListTail:
+                            panic("something went wrong")
+                        case RuleGenOptional:
+                            var ref = refer_part(info.Item)
+                            ref += "?"
+                            part_expr[j] = ref
+                        default:
+                            panic("impossible branch")
+                        }
+                    } else {
+                        var ref = refer_part(part_name)
+                        if part_rule.Nullable {
+                            ref += "?"
+                        }
+                        part_expr[j] = ref
+                    }
+                default:
+                    panic("impossible branch")
+                }
+            }
+            branch_expr[i] = strings.Join(part_expr, " ")
+        }
+        var expr = strings.Join(branch_expr, " | ")
+        println(fmt.Sprintf("%s ::= %s", rule_name, expr))
     }
 }
 
