@@ -146,7 +146,6 @@ func makeType(item string, args ...typsys.Type) typsys.Type {
         Args: args,
     }
 }
-// TODO: makeType(variadic->slice), makeType0, makeType1, makeType2, ...
 func matchType(item string, t typsys.Type) ([] typsys.Type, bool) {
     if ref_type, ok := t.(typsys.RefType); ok {
         var ref = ref_type.Def

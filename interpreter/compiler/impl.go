@@ -89,7 +89,6 @@ type Fragment struct {
     namespace  string
     internal   internalMaps
     external   externalMaps
-    // TODO: usage map (usageKey -> source.Location)
 }
 type internalMaps struct {
     dspMap      ctn.Map[dispatchKey, **program.DispatchTable]

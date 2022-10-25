@@ -38,7 +38,6 @@ func (s Set[T]) Deleted(v T) (Set[T], bool) {
     var _, deleted, exists = s.AVL.Deleted(v, s.Cmp)
     return s.from(deleted), exists
 }
-// TODO: UnionWith, IntersectWith, ...
 func (s Set[T]) MutSet() MutSet[T] {
     var ptr = new(Set[T])
     *ptr = s
