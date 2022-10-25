@@ -7,8 +7,8 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'docs'
-copyright = '2022, mizusato'
-author = 'mizusato'
+copyright = '2022, maze1024x'
+author = 'maze1024x'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
