@@ -25,12 +25,14 @@ var __IgnoreTokens = [...] string {
 
 const LF = `\n`
 const Blanks = ` \t\r　`
-const Symbols = `\{\}\[\]\(\)\.,:;@#\|\&\\'"` + "`"
+const Symbols = `\{\}\[\]\(\)\.,:;@\|\&\\'"` + "`"
 const nameEverywhereDisallow = (Symbols + Blanks + LF)
 const nameHeadDisallow = (`0-9` + nameEverywhereDisallow)
 const NamePattern = `[^`+nameHeadDisallow+`][^`+nameEverywhereDisallow+`]*`
 
 var __Tokens = [...] Token {
+    // pragma
+    Token { Name: "Pragma",   Pattern: r(`#![^`+LF+`]*`) },
     // doc
     Token { Name: "Doc",      Pattern: r(`///[^`+LF+`]*`) },
     // ignored
@@ -65,7 +67,6 @@ var __Tokens = [...] Token {
     Token { Name: ":",    Pattern: r(`:`) },
     Token { Name: ";",    Pattern: r(`;`) },
     Token { Name: "@",    Pattern: r(`@`) },
-    Token { Name: "#",    Pattern: r(`#`) },
     Token { Name: "|",    Pattern: r(`\|`) },
     Token { Name: "&",    Pattern: r(`\&`) },
     // keywords
@@ -110,7 +111,8 @@ func GetKeywordList() ([] string) {
 }
 
 var __SyntaxDefinition = [...] string {
-    "root = ns! alias* stmt*",
+    "root = shebang ns! alias* stmt*",
+      "shebang? = Pragma",
       "ns = @namespace name? ::! ",
         "name = Name",
       "alias = @using alias_name alias_target",

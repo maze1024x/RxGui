@@ -2,6 +2,7 @@ package compiler
 
 import (
     "fmt"
+    "bytes"
     "errors"
     "strings"
     "path/filepath"
@@ -27,6 +28,7 @@ func ReadManifest(file string, fs FileSystem) (Manifest, error) {
         if err != nil { return Manifest{},
             fmt.Errorf("unable to open manifest file: %w", err)
         }
+        trimShebang(&content)
         { var err = json.Unmarshal(content, &manifest)
         if err != nil { return Manifest{},
             fmt.Errorf("unable to parse manifest file: %w", err)
@@ -44,6 +46,14 @@ func ReadManifest(file string, fs FileSystem) (Manifest, error) {
         *f = filepath.Join(dir, *f)
     }
     return manifest, nil
+}
+
+func trimShebang(content *([] byte)){
+    if bytes.HasPrefix(*content, [] byte { '#', '!' }) {
+        if i := bytes.IndexByte(*content, '\n'); i != -1 {
+            *content = (*content)[i+1:]
+        }
+    }
 }
 
 

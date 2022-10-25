@@ -19,18 +19,20 @@ Conditional Keywords
 Identifier Rules
 ================
 
+* An identifier must NOT be
+  a comment (starting with ``//``)
+  or a pragma (starting with ``#!``).
 * An identifier must NOT be identical to a strict keyword.
-* An identifier must NOT start with a digit
-  (0-9).
+* An identifier must NOT start with a digit (0-9).
 * An identifier must NOT contain any blank or line break
   (Space, full-width Space, Tab, CR, LF).
 * An identifier must NOT contain any of the following symbols.
 
 .. code-block:: none
 
-    { } [ ] ( ) . , : ; @ # | & \ ' " `
+    { } [ ] ( ) . , : ; @ | & \ ' " `
 
-Note that ``+ - * / % ^ ~ ! ? $ > == <`` are all valid identifiers.
+Note that ``+ - * / % ^ ~ ! ? # $ > == <`` are all valid identifiers.
 
 Naming Conventions
 ==================
