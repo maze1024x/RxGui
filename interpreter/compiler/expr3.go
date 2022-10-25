@@ -158,9 +158,6 @@ func checkPipeInterior(interior ast.PipeInterior, in ast.Expr, cc *exprCheckCont
 }
 
 func checkPipeInfix(infix ast.PipeInfix, in ast.Expr, cc *exprCheckContext) (*program.Expr, *source.Error) {
-    if infix.Off {
-        return cc.forwardTo(in)
-    }
     var left, err = cc.checkChildExpr(nil, in)
     if err != nil { return nil, err }
     var right = infix.PipeCall

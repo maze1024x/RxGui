@@ -302,9 +302,6 @@ func analyze(root *ast.Root, errs *source.Errors) (*Header,*Impl) {
     var gen_hdr = ctn.MakeMutMap[genFunKey,*funHeader](genFunKeyCompare)
     var gen_impl = ctn.MakeMutMap[genFunKey,funImpl](genFunKeyCompare)
     for _, alias := range root.Aliases {
-        if alias.Off {
-            continue
-        }
         var loc = alias.Location
         switch T := alias.Target.AliasTarget.(type) {
         case ast.AliasToNamespace:
@@ -353,9 +350,6 @@ func analyze(root *ast.Root, errs *source.Errors) (*Header,*Impl) {
     for _, stmt := range root.Statements {
         switch S := stmt.Statement.(type) {
         case ast.DeclType:
-            if S.Off {
-                continue
-            }
             var name = ast.Id2String(S.Name)
             if types.Has(name) {
                 source.ErrorsJoin(errs, source.MakeError(S.Location,
@@ -383,9 +377,6 @@ func analyze(root *ast.Root, errs *source.Errors) (*Header,*Impl) {
             })
         default:
             var u = unifyFunDecl(S, pm, ns)
-            if u.off {
-                continue
-            }
             var name = ast.Id2String(u.name)
             var group = (func() ctn.Map[string, *funHeader] {
                 var group, exists = user_hdr.Lookup(name)
@@ -1042,7 +1033,6 @@ type unifiedFunDecl struct {
     sig   ast.FunctionSignature
     loc   source.Location
     doc   [] ast.Doc
-    off   bool
     impl  funImpl
 }
 type paramMapping (map[string] ([] ast.Identifier))
@@ -1077,7 +1067,6 @@ func unifyFunDecl(stmt ast.Statement, pm paramMapping, ns string) *unifiedFunDec
             sig:  S.Signature,
             loc:  S.Location,
             doc:  S.Docs,
-            off:  S.Off,
             impl: funImplFromAstBody(S.Body),
         }
     case ast.DeclConst:
@@ -1091,7 +1080,6 @@ func unifyFunDecl(stmt ast.Statement, pm paramMapping, ns string) *unifiedFunDec
             sig:  sig,
             loc:  S.Location,
             doc:  S.Docs,
-            off:  S.Off,
             impl: funImplFromAstBody(S.Body),
         }
     case ast.DeclMethod:
@@ -1110,7 +1098,6 @@ func unifyFunDecl(stmt ast.Statement, pm paramMapping, ns string) *unifiedFunDec
             sig:  sig,
             loc:  S.Location,
             doc:  S.Docs,
-            off:  S.Off,
             impl: funImplFromAstBody(S.Body),
         }
     case ast.DeclEntry:
@@ -1127,7 +1114,6 @@ func unifyFunDecl(stmt ast.Statement, pm paramMapping, ns string) *unifiedFunDec
             sig:  sig,
             loc:  S.Location,
             doc:  S.Docs,
-            off:  S.Off,
             impl: funImplAstExpr { expr },
         }
     default:

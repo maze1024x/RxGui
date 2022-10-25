@@ -77,9 +77,6 @@ func checkWhen(W ast.When, cc *exprCheckContext) (*program.Expr, *source.Error) 
         var branches = make([] *program.WhenBranch, len(f.FieldList))
         for _, c := range W.Cases {
         for _, n := range c.Names {
-            if c.Off {
-                break
-            }
             var in = c.InputPattern
             var out = c.OutputExpr
             var key = ast.Id2String(n)
@@ -200,9 +197,6 @@ func checkEach(E ast.Each, cc *exprCheckContext) (*program.Expr, *source.Error) 
         var occurred = make(map[int] struct{})
         for _, c := range E.Cases {
         for _, n := range c.Names {
-            if c.Off {
-                break
-            }
             var in = c.InputPattern
             var out = c.OutputExpr
             var key = ast.Id2String(n)

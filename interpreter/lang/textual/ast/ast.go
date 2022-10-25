@@ -100,7 +100,6 @@ type Root struct {
 }
 type Alias struct {
     Node                         `part:"alias"`
-    Off     bool                 `option:"off.#"`
     Name    MaybeIdentifier      `part?:"alias_name.name"`
     Target  VariousAliasTarget   `part:"alias_target"`
 }
@@ -128,14 +127,12 @@ func (DeclEntry) impl(Statement) {}
 type DeclEntry struct {
     Node              `part:"decl_entry"`
     Docs     [] Doc   `list:"docs.doc+"`
-    Off      bool     `option:"off.#"`
     Content  Block    `part:"block"`
 }
 func (DeclType) impl(Statement) {}
 type DeclType struct {
     Node                         `part:"decl_type"`
     Docs        [] Doc           `list:"docs.doc+"`
-    Off         bool             `option:"off.#"`
     Name        Identifier       `part:"name"`
     TypeParams  [] Identifier    `list:"type_params.name*,"`
     Implements  [] RefBase       `list:"impl.ref_base*,"`
@@ -145,7 +142,6 @@ func (DeclFunction) impl(Statement) {}
 type DeclFunction struct {
     Node                           `part:"decl_func"`
     Docs       [] Doc              `list:"docs.doc+"`
-    Off        bool                `option:"off.#"`
     Operator   bool                `option:"function.@operator"`
     Variadic   bool                `option:"variadic.@variadic"`
     Name       Identifier          `part:"name"`
@@ -169,7 +165,6 @@ func (DeclMethod) impl(Statement) {}
 type DeclMethod struct {
     Node                    `part:"decl_method"`
     Docs      [] Doc        `list:"docs.doc+"`
-    Off       bool          `option:"off.#"`
     Receiver  Identifier    `part:"receiver.name"`
     Name      Identifier    `part:"name"`
     Type      Type          `part:"type"`
@@ -179,7 +174,6 @@ func (DeclConst) impl(Statement) {}
 type DeclConst struct {
     Node                `part:"decl_const"`
     Docs  [] Doc        `list:"docs.doc+"`
-    Off   bool          `option:"off.#"`
     Name  Identifier    `part:"name"`
     Type  Type          `part:"type"`
     Body  VariousBody   `part:"body"`
@@ -321,7 +315,6 @@ type InfixTerm struct {
 func (PipeInfix) impl(Pipe) {}
 type PipeInfix struct {
     Node                        `part:"pipe_infix"`
-    Off       bool              `option:"off.#"`
     Callee    Ref               `part:"ref"`
     PipeCall  VariousPipeCall   `part:"pipe_call"`
 }
@@ -369,7 +362,6 @@ type VariousBinding struct {
 func (BindingPlain) impl(Binding) {}
 type BindingPlain struct {
     Node                      `part:"binding_plain"`
-    Off      bool             `option:"off.#"`
     Const    bool             `option:"let.Const"`
     Pattern  VariousPattern   `part:"pattern"`
     Value    Expr             `part:"expr"`
@@ -377,7 +369,6 @@ type BindingPlain struct {
 func (BindingCps) impl(Binding) {}
 type BindingCps struct {
     Node                    `part:"binding_cps"`
-    Off      bool           `option:"off.#"`
     Callee   Ref            `part:"ref"`
     Pattern  MaybePattern   `part?:"cps_pattern.pattern"`
     Value    Expr           `part:"expr"`
@@ -444,7 +435,6 @@ type When struct {
 }
 type Case struct {
     Node                          `part:"case"`
-    Off           bool            `option:"off.#"`
     Names         [] Identifier   `list:"name+_bar"`
     InputPattern  MaybePattern    `part?:"pattern?.pattern"`
     OutputExpr    Expr            `part:"expr"`

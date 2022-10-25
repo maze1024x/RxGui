@@ -91,9 +91,6 @@ func checkBlock(B ast.Block, cc *exprCheckContext) (*program.Expr, *source.Error
         var first, rest = cutAstBlock(B)
         switch B := first.Binding.(type) {
         case ast.BindingPlain:
-            if B.Off {
-                return cc.forwardTo(rest)
-            }
             var val_expr, err = cc.checkChildExpr3(nil, B.Value, B.Const)
             if err != nil { return nil, err }
             var val_t = val_expr.Type
@@ -111,9 +108,6 @@ func checkBlock(B ast.Block, cc *exprCheckContext) (*program.Expr, *source.Error
                 })
             }}}
         case ast.BindingCps:
-            if B.Off {
-                return cc.forwardTo(rest)
-            }
             var k = ast.WrapTermAsExpr(ast.VariousTerm {
                 Node: B.Node,
                 Term: ast.Lambda {
