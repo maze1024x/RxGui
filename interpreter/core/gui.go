@@ -327,8 +327,10 @@ func CreateDynamicWidget(widgets Observable, h RuntimeHandle) Hook {
 }
 
 type ListViewConfig struct {
-    CreateInterface  func(ctx qt.Pkg) qt.Lwi
-    ReturnObject     func(w Widget, e Observable, c Observable, s Observable) Object
+    CreateInterface   func(ctx qt.Pkg) qt.Lwi
+    ReturnObject      func(w Widget, e Observable, c Observable, s Observable) Object
+    CurrentChanged    string
+    SelectionChanged  string
 }
 func ListView(config ListViewConfig, data Observable, getKey func(Object)(string), p ItemViewProvider, h RuntimeHandle) Hook {
     return Hook { Observable(func(pub DataPublisher) {
@@ -422,7 +424,7 @@ func ListView(config ListViewConfig, data Observable, getKey func(Object)(string
         var watch = func(name string, k func(Object)(Observable)) Observable {
             return MakeSignal(name).Connect(w, h).StartWith(nil).ConcatMap(k)
         }
-        var e = watch(qt.DefaultListWidget_CurrentChanged, func(_ Object) Observable {
+        var e = watch(config.CurrentChanged, func(_ Object) Observable {
             return doSync1(func() ctn.Maybe[Widget] {
                 if cur, ok := I.Current(); ok {
                 if item, ok := m[cur]; ok {
@@ -431,12 +433,12 @@ func ListView(config ListViewConfig, data Observable, getKey func(Object)(string
                 return nil
             })
         })
-        var c = watch(qt.DefaultListWidget_CurrentChanged, func(_ Object) Observable {
+        var c = watch(config.CurrentChanged, func(_ Object) Observable {
             return doSync1(func() ctn.Maybe[string] {
                 return ctn.MakeMaybe(I.Current())
             })
         })
-        var s = watch(qt.DefaultListWidget_SelectionChanged, func(_ Object) Observable {
+        var s = watch(config.SelectionChanged, func(_ Object) Observable {
             return doSync1(func() ([] string) {
                 return I.Selection()
             })
@@ -499,6 +501,7 @@ func listViewItemPos(o Observable) Observable {
 type ListEditViewConfig struct {
     CreateInterface  func(ctx qt.Pkg) qt.Lwi
     ReturnObject     func(w Widget, o Observable, e Observable, O Subject) Object
+    CurrentChanged   string
 }
 func ListEditView(config ListEditViewConfig, initial List, p ItemEditViewProvider, h RuntimeHandle) Hook {
     return Hook { Observable(func(pub DataPublisher) {
@@ -563,7 +566,7 @@ func ListEditView(config ListEditViewConfig, initial List, p ItemEditViewProvide
         var watch = func(name string, k func(Object)(Observable)) Observable {
             return MakeSignal(name).Connect(w, h).StartWith(nil).ConcatMap(k)
         }
-        var e = watch(qt.DefaultListWidget_CurrentChanged, func(_ Object) Observable {
+        var e = watch(config.CurrentChanged, func(_ Object) Observable {
             return doSync1(func() ctn.Maybe[Widget] {
                 return store.getCurrentExtension(I)
             })

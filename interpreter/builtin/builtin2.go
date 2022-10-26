@@ -1805,6 +1805,8 @@ func ListView(data core.Observable, key func(core.Object)(string), p core.ItemVi
                 Selection: s,
             })
         },
+        CurrentChanged: qt.DefaultListWidget_CurrentChanged,
+        SelectionChanged: qt.DefaultListWidget_SelectionChanged,
     }
     return core.ListView(config, data, key, p, h)
 }
@@ -1834,6 +1836,7 @@ func ListEditView(initial core.List, p core.ItemEditViewProvider, headers ([] He
                 EditOps:   O,
             })
         },
+        CurrentChanged: qt.DefaultListWidget_CurrentChanged,
     }
     return core.ListEditView(config, initial, p, h)
 }
