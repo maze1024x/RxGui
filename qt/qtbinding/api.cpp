@@ -1070,6 +1070,10 @@ QtString QtLwiCurrent(void* lwi_ptr, QtBool* exists) {
     auto lwi = (ListWidgetInterface*) lwi_ptr;
     return WrapString(lwi->Current((bool*) exists));
 }
+QtString QtLwiActivation(void* lwi_ptr) {
+    auto lwi = (ListWidgetInterface*) lwi_ptr;
+    return WrapString(lwi->Activation());
+}
 QtStringList QtLwiAll(void* lwi_ptr) {
     auto lwi = (ListWidgetInterface*) lwi_ptr;
     auto ptr = new QStringList();

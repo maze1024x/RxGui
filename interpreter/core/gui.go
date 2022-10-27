@@ -327,10 +327,11 @@ func CreateDynamicWidget(widgets Observable, h RuntimeHandle) Hook {
 }
 
 type ListViewConfig struct {
-    CreateInterface   func(ctx qt.Pkg) qt.Lwi
-    ReturnObject      func(w Widget, e Observable, c Observable, s Observable) Object
-    CurrentChanged    string
-    SelectionChanged  string
+    CreateInterface      func(ctx qt.Pkg) qt.Lwi
+    ReturnObject         func(w Widget, e Observable, c Observable, s Observable, a Observable) Object
+    CurrentChanged       string
+    SelectionChanged     string
+    ActivationTriggered  string
 }
 func ListView(config ListViewConfig, data Observable, getKey func(Object)(string), p ItemViewProvider, h RuntimeHandle) Hook {
     return Hook { Observable(func(pub DataPublisher) {
@@ -421,10 +422,13 @@ func ListView(config ListViewConfig, data Observable, getKey func(Object)(string
                 }
             })
         })
-        var watch = func(name string, k func(Object)(Observable)) Observable {
+        var watch0 = func(name string, k func(Object)(Observable)) Observable {
+            return MakeSignal(name).Connect(w, h).ConcatMap(k)
+        }
+        var watch1 = func(name string, k func(Object)(Observable)) Observable {
             return MakeSignal(name).Connect(w, h).StartWith(nil).ConcatMap(k)
         }
-        var e = watch(config.CurrentChanged, func(_ Object) Observable {
+        var e = watch1(config.CurrentChanged, func(_ Object) Observable {
             return doSync1(func() ctn.Maybe[Widget] {
                 if cur, ok := I.Current(); ok {
                 if item, ok := m[cur]; ok {
@@ -433,14 +437,19 @@ func ListView(config ListViewConfig, data Observable, getKey func(Object)(string
                 return nil
             })
         })
-        var c = watch(config.CurrentChanged, func(_ Object) Observable {
+        var c = watch1(config.CurrentChanged, func(_ Object) Observable {
             return doSync1(func() ctn.Maybe[string] {
                 return ctn.MakeMaybe(I.Current())
             })
         })
-        var s = watch(config.SelectionChanged, func(_ Object) Observable {
+        var s = watch1(config.SelectionChanged, func(_ Object) Observable {
             return doSync1(func() ([] string) {
                 return I.Selection()
+            })
+        })
+        var a = watch0(config.ActivationTriggered, func(_ Object) Observable {
+            return doSync1(func() string {
+                return I.Activation()
             })
         })
         pub.run(update, ctx, &observer {
@@ -448,7 +457,7 @@ func ListView(config ListViewConfig, data Observable, getKey func(Object)(string
             error:    lg.LogError,
             complete: func() {},
         })
-        ob.value(config.ReturnObject(w, e, c, s))
+        ob.value(config.ReturnObject(w, e, c, s, a))
         ob.complete()
     })}
 }

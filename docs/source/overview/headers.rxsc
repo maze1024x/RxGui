@@ -54,8 +54,7 @@ entry {
                 ItemView(List(key.Widget, kind.Widget, value.Widget, ratio.Widget))
             }}
         },
-        @use Effect(DebugWatch('current', view.Current)),
-        @use Effect(DebugWatch('selection', view.Selection)),
+        @use Effect(DebugWatch('activations', view.Activations)),
         Window {
             title: $('Multi-column Data List'), width: 440, height: 330,
             layout: Row(view.Widget)

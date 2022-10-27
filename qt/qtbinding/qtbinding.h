@@ -300,6 +300,7 @@ extern "C" {
     EXPORT void* QtLwiCreateFromDefaultListWidget(size_t columns, int select_, void** headers_ptr, size_t headers_len, int stretch);
     EXPORT void* QtLwiCastToWidget(void* lwi_ptr);
     EXPORT QtString QtLwiCurrent(void* lwi_ptr, QtBool* exists);
+    EXPORT QtString QtLwiActivation(void* lwi_ptr);
     EXPORT QtStringList QtLwiAll(void* lwi_ptr);
     EXPORT QtStringList QtLwiSelection(void* lwi_ptr);
     EXPORT QtStringList QtLwiContiguousSelection(void* lwi_ptr);

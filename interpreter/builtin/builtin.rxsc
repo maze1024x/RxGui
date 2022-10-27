@@ -779,10 +779,11 @@ function ProgressBar { value $[Int], max Int, format String('') } Hook[ProgressB
 }
 
 type ListView[T] record {
-    Widget     Widget,
-    Extension  $[Maybe[Widget]],
-    Current    $[Maybe[String]],
-    Selection  $[List[String]]
+    Widget       Widget,
+    Extension    $[Maybe[Widget]],
+    Current      $[Maybe[String]],
+    Selection    $[List[String]],
+    Activations  $[String]
 }
 function ListView[T] {
     data     $[List[T]],

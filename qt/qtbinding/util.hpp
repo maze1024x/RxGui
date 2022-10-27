@@ -609,6 +609,7 @@ public:
     enum MoveHint { Up, Down };
     virtual QWidget* CastToWidget() = 0;
     virtual QString Current(bool* exists) = 0;
+    virtual QString Activation() = 0;
     virtual QStringList All() = 0; // returned keys must be in list order
     virtual QStringList Selection() = 0; // (same as the comment above)
     virtual QStringList ContiguousSelection() = 0; // (same as the comment above)
@@ -659,15 +660,36 @@ public:
                 header()->setSectionResizeMode(stretch, QHeaderView::Stretch);
             }
         }
+        connect(this, &QAbstractItemView::doubleClicked, this, &DefaultListWidget::DoubleClickActivate);
     }
     virtual ~DefaultListWidget() {}
-    virtual void focusInEvent(QFocusEvent *event) override {
-        // bypass QAbstractItemView::focusInEvent
-        QAbstractScrollArea::focusInEvent(event);
+protected:
+    QString activation;
+    void DoubleClickActivate(const QModelIndex& index) {
+        activation = GetKey(itemFromIndex(index));
+        emit activationTriggered();
     }
-    virtual void focusOutEvent(QFocusEvent *event) override {
+    void ReturnPressActivate() {
+        bool exists;
+        QString current = Current(&exists);
+        if (exists) {
+            activation = current;
+            emit activationTriggered();
+        }
+    }
+    virtual void keyPressEvent(QKeyEvent* ev) override {
+        if (ev->key() == Qt::Key_Return) {
+            ReturnPressActivate();
+        }
+        QTreeWidget::keyPressEvent(ev);
+    }
+    virtual void focusInEvent(QFocusEvent* ev) override {
+        // bypass QAbstractItemView::focusInEvent
+        QAbstractScrollArea::focusInEvent(ev);
+    }
+    virtual void focusOutEvent(QFocusEvent* ev) override {
         // bypass QAbstractItemView::focusOutEvent
-        QAbstractScrollArea::focusOutEvent(event);
+        QAbstractScrollArea::focusOutEvent(ev);
     }
     int Size() {
         return topLevelItemCount();
@@ -720,6 +742,9 @@ public:
             chv->workaround();
         }
     }
+signals:
+    void activationTriggered();
+public:
     virtual QWidget* CastToWidget() override {
         return static_cast<QWidget*>(this);
     }
@@ -732,6 +757,9 @@ public:
             *exists = false;
             return "";
         }
+    }
+    virtual QString Activation() override {
+        return activation;
     }
     virtual QStringList All() override {
         QStringList keys;

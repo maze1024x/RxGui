@@ -865,6 +865,7 @@ func (I Lwi) objectPointer() unsafe.Pointer {
 }
 const DefaultListWidget_CurrentChanged = "currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)"
 const DefaultListWidget_SelectionChanged = "itemSelectionChanged()"
+const DefaultListWidget_ActivationTriggered = "activationTriggered()"
 func LwiCreateFromDefaultListWidget(columns int, select_ ItemSelectionMode, headers ([] Widget), stretch int, ctx Pkg) Lwi {
     var headers_ptr, headers_len = ptrlen(headers)
     var ptr = C.QtLwiCreateFromDefaultListWidget (
@@ -885,6 +886,9 @@ func (I Lwi) Current() (string, bool) {
     var exists C.QtBool
     var key = consumeString(C.QtLwiCurrent(I.ptr, &exists))
     return key, getBool(exists)
+}
+func (I Lwi) Activation() string {
+    return consumeString(C.QtLwiActivation(I.ptr))
 }
 func (I Lwi) All() ([] string) {
     return consumeStringList(C.QtLwiAll(I.ptr))

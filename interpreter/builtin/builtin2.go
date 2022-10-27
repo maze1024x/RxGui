@@ -1781,10 +1781,11 @@ func PropValue() core.Prop {
 }
 
 type ListView_T struct {
-    Widget     core.Widget
-    Extension  core.Observable
-    Current    core.Observable
-    Selection  core.Observable
+    Widget       core.Widget
+    Extension    core.Observable
+    Current      core.Observable
+    Selection    core.Observable
+    Activations  core.Observable
 }
 func ListView(data core.Observable, key func(core.Object)(string), p core.ItemViewProvider, headers ([] HeaderView), stretch int, select_ ItemSelect, h core.RuntimeHandle) core.Hook {
     var config = core.ListViewConfig {
@@ -1797,16 +1798,18 @@ func ListView(data core.Observable, key func(core.Object)(string), p core.ItemVi
                 ctx,
             )
         },
-        ReturnObject: func(w core.Widget, e core.Observable, c core.Observable, s core.Observable) core.Object {
+        ReturnObject: func(w core.Widget, e core.Observable, c core.Observable, s core.Observable, a core.Observable) core.Object {
             return core.ToObject(ListView_T {
-                Widget:    w,
-                Extension: e,
-                Current:   c,
-                Selection: s,
+                Widget:      w,
+                Extension:   e,
+                Current:     c,
+                Selection:   s,
+                Activations: a,
             })
         },
-        CurrentChanged: qt.DefaultListWidget_CurrentChanged,
-        SelectionChanged: qt.DefaultListWidget_SelectionChanged,
+        CurrentChanged:      qt.DefaultListWidget_CurrentChanged,
+        SelectionChanged:    qt.DefaultListWidget_SelectionChanged,
+        ActivationTriggered: qt.DefaultListWidget_ActivationTriggered,
     }
     return core.ListView(config, data, key, p, h)
 }
