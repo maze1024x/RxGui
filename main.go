@@ -21,7 +21,7 @@ const SourceFilePathPrompt = "Input a source file path or press Enter to start R
 
 type Args struct {
     Positional  [] string  `arg:"positional" hint:"[PATH [ARGUMENT]...]"`
-    Command     string     `arg:"command" key:"help-0; version-0; atom-0; parse; run" default:"run" desc:"show this help; show version; start plugin backend service for the Atom Editor; parse the file at PATH; run the file or directory at PATH"`
+    Command     string     `arg:"command" key:"help-0; version-0; atom-0; parse; __index-1; run" default:"run" desc:"show this help; show version; start plugin backend service for the Atom Editor; parse files or stdin; index a file and output an ad hoc json document; run the file or directory at PATH"`
     EntryNS     string     `arg:"value-string" key:"entry" hint:"NS" desc:"namespace of entry point"`
     Debug       bool       `arg:"flag-enable" key:"debug" desc:"enable debugger"`
 }
@@ -43,6 +43,12 @@ var Commands = map[string] func(*Args) {
                 if err != nil { fatal.ThrowError(err) }
             }
         }
+    },
+    "__index": func(args *Args) {
+        var file = args.Positional[0]
+        var code_bytes, err = os.ReadFile(file)
+        if err != nil { fatal.ThrowError(err) }
+        textual.OutputAdHocIndex(code_bytes, file)
     },
     "run": func(args *Args) {
         var file, file_not_specified, p_args = (func() (string, bool, ([] string)) {
