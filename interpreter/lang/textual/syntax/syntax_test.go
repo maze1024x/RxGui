@@ -166,12 +166,22 @@ func outputGeneratedTreeSitterGrammar() {
                     part_contents[j] = keyword(content)
                 case MatchToken:
                     var kw_value, as_keyword = lex_kw_mapping[part_name]
-                    if as_keyword {
-                        // lex kw
-                        part_contents[j] = keyword(kw_value)
-                    } else {
-                        part_contents[j] = part_name
-                    }
+                    part_contents[j] = (func() string {
+                        if as_keyword {
+                            // lexical keyword (strict keyword)
+                            return keyword(kw_value)
+                        } else {
+                            if part.Id == NameTokenId() {
+                                // lower lexical precedence for identifier
+                                return fmt.Sprintf (
+                                    "token(prec(-2, %s))",
+                                    part_name,
+                                )
+                            } else {
+                                return part_name
+                            }
+                        }
+                    })()
                 case Recursive:
                     if part_rule.Generated {
                         var info = part_rule.GenInfo

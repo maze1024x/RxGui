@@ -93,7 +93,7 @@ func highlight(ptr int, nodes ([] TreeNode)) ColorKey {
                 if matchAncestors(&ptr, nodes, __pipe_infix) {
                     return CK_Callable
                 }
-                if matchAncestors(&ptr, nodes, __operator) {
+                if matchAncestors(&ptr, nodes, __infix_term) {
                     return CK_Callable
                 }
                 if matchAncestors(&ptr, nodes, __binding_cps) {
@@ -148,7 +148,7 @@ var __ref_term = syntax.Name2IdMustExist("ref_term")
 var __term = syntax.Name2IdMustExist("term")
 var __pipe_call = syntax.Name2IdMustExist("pipe_call")
 var __pipe_infix = syntax.Name2IdMustExist("pipe_infix")
-var __operator = syntax.Name2IdMustExist("operator")
+var __infix_term = syntax.Name2IdMustExist("infix_term")
 var __binding_cps = syntax.Name2IdMustExist("binding_cps")
 var __name = syntax.Name2IdMustExist("name")
 var __stmt = syntax.Name2IdMustExist("stmt")

@@ -26,9 +26,8 @@ var __IgnoreTokens = [...] string {
 const LF = `\n`
 const Blanks = ` \t\r　`
 const Symbols = `\{\}\[\]\(\)\.,:;@\|\&\\'"` + "`"
-const nameEverywhereDisallow = (Symbols + Blanks + LF)
-const nameHeadDisallow = (`0-9` + nameEverywhereDisallow)
-const NamePattern = `[^`+nameHeadDisallow+`][^`+nameEverywhereDisallow+`]*`
+const nameDisallow = (Symbols + Blanks + LF)
+const NamePattern = `[^`+nameDisallow+`]+`
 
 var __Tokens = [...] Token {
     // pragma
@@ -169,9 +168,8 @@ var __SyntaxDefinition = [...] string {
         "pipe_interior = . ( ref_base! )!",
     "term = infix_term | lambda | if | when | each | block | ref_term " +
         "| int | float | char | bytes | string ",
-      "infix_term = ( infix_left operator infix_right! )!",
+      "infix_term = ( infix_left ref infix_right! )!",
         "infix_left = expr",
-        "operator = ref",
         "infix_right = expr",
       "lambda = { pattern? lambda_self => expr! }!",
         "lambda_self? = & name!",

@@ -20,10 +20,10 @@ Identifier Rules
 ================
 
 * An identifier must NOT be
-  a comment (starting with ``//``)
-  or a pragma (starting with ``#!``).
+  a comment (starting with ``//``),
+  a pragma (starting with ``#!``),
+  or a number (e.g. 1, 2e3, -4.56, 0x789).
 * An identifier must NOT be identical to a strict keyword.
-* An identifier must NOT start with a digit (0-9).
 * An identifier must NOT contain any blank or line break
   (Space, full-width Space, Tab, CR, LF).
 * An identifier must NOT contain any of the following symbols.

@@ -308,7 +308,7 @@ type PipeInterior struct {
 func (InfixTerm) impl(Term) {}
 type InfixTerm struct {
     Node             `part:"infix_term"`
-    Operator  Ref    `part:"operator.ref"`
+    Operator  Ref    `part:"ref"`
     Left      Expr   `part:"infix_left.expr"`
     Right     Expr   `part:"infix_right.expr"`
 }
