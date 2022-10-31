@@ -4,6 +4,8 @@ Usage
 Writing Code
 ============
 
+The source file name suffix of RxScript is ``.rxsc``.
+
 There is a VSCode extension for RxScript available in the marketplace.
 
 `RxScript - Visual Studio Marketplace
