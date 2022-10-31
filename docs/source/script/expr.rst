@@ -471,6 +471,36 @@ which is composable.
     it is still okay to define a function named ``FooBar``,
     as a conventional constructor.
 
+Record Observable Projection
+----------------------------
+
+Making a field projection from a record Observable.
+
+.. code-block::
+
+    $(Pair(1,'a'), Pair(2,'b'), Pair(3,'c')).First
+    // emits 1, 2, 3
+
+.. code-block::
+
+    $(Pair(1,'a'), Pair(2,'b'), Pair(3,'c')).Second
+    // emits "a", "b", "c"
+
+The ``map`` operator can be used to achieve similar result,
+but when using the ``map`` operator,
+even if the value of the field isn't updated,
+a value that is identical to the previous one is emitted anyways.
+
+.. code-block::
+
+    { let p = Pair(1,'foo'), $(p, p.(Second).Assign('bar')) | map({ pair => pair.First }) }
+    // emits 1, 1
+
+.. code-block::
+
+    { let p = Pair(1,'foo'), $(p, p.(Second).Assign('bar')).First }
+    // emits 1
+
 Decorated Construction of Record
 --------------------------------
 
