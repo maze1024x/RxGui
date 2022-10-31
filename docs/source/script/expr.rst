@@ -488,15 +488,15 @@ Making a field projection from a record Observable.
 
 The ``map`` operator can be used to achieve similar result,
 but when using the ``map`` operator,
-even if the value of the field isn't updated,
-a value that is identical to the previous one is emitted anyways.
+even if the projected field isn't updated,
+a value that is identical to the previous one can be emitted regradless.
 
-.. code-block::
+.. code-block:: none
 
     { let p = Pair(1,'foo'), $(p, p.(Second).Assign('bar')) | map({ pair => pair.First }) }
     // emits 1, 1
 
-.. code-block::
+.. code-block:: none
 
     { let p = Pair(1,'foo'), $(p, p.(Second).Assign('bar')).First }
     // emits 1
