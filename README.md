@@ -1,9 +1,11 @@
 # RxGui
 
 RxGui is a high-level GUI framework based on Qt Widgets.
+It enables developers to create classic widget apps
+with a modern paradigm featuring the power of ReactiveX.
 
-It uses a custom programming language called RxScript.
+Documentation: https://rxgui.readthedocs.io/en/latest/
 
-(TODO)
+Discord: https://discord.gg/4guHbjeXK3
 
 
