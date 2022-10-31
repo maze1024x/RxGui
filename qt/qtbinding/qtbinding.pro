@@ -3,7 +3,7 @@ HEADERS += qtbinding.h util.hpp
 SOURCES += api.cpp util.cpp
 TARGET = qtbinding
 TEMPLATE = lib
-QT += widgets svg
+QT += widgets
 
 RESOURCES += qtbinding.qrc Tango/
 
