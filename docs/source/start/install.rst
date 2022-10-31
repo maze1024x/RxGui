@@ -8,7 +8,7 @@ Binary files for Linux(x86_64) and Windows(x64) are available at the
 `GitHub Releases Page
 <https://github.com/maze1024x/RxGui/releases>`_.
 
-Note that the Linux version doesn't ship with Qt library files.
+Note that the Linux version does not ship with Qt library files.
 It assumes Qt5 is already installed.
 
 .. Tip::
