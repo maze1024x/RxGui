@@ -18,6 +18,12 @@ It assumes Qt5 is already installed.
 Building From Source
 ====================
 
+Build instructions differ by platform,
+as described below in separate subsections.
+
+On all the following platforms,
+built files are stored in the ``build`` directory.
+
 Linux
 -----
 
