@@ -4,6 +4,14 @@ Welcome to documentation!
 .. toctree::
    :maxdepth: 2
    :hidden:
+   :caption: Getting Started
+
+   start/install
+   start/use
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
    :caption: Overview
 
    overview/hello
