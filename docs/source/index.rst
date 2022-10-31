@@ -12,7 +12,7 @@ shipping with language-level support for ReactiveX.
 
 The paradigm is similar to modern Web frameworks (React, Vue, Angular)
 but refined to leverage the full power of ReactiveX.
-It will be easy to learn for Web developers who are familiar to RxJS.
+It will be easy to learn for Web developers who are familiar with RxJS.
 
 This documentation assumes prior knowledge about ReactiveX
 and basic functional programming practices.
