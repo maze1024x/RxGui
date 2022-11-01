@@ -64,7 +64,7 @@ ifeq ($(ASAN_ENABLED),1)
 	exit 1
 endif
 ifdef OS
-	zip -j build/release.zip build/*.exe build/*.h build/*.dll `ldd build/$(EXENAME) | grep mingw64 | cut -f 2 | cut -f 1 -d ' ' | xargs -i echo /mingw64/bin/"{}"`
+	zip -j build/release.zip build/*.exe build/*.h build/*.dll `ldd build/$(EXENAME) | grep mingw64 | cut -f 2 | cut -f 1 -d ' ' | xargs -i echo /mingw64/bin/"{}"` `ls /mingw64/share/qt5/plugins/platforms/*.dll`
 else
 	cd build && tar -vcapf release.tar.gz `ls * | grep -v "release"`
 endif
