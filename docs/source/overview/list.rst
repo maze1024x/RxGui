@@ -31,7 +31,7 @@ Classic Editable List
     :scale: 62%
 
 In a typical classic GUI app,
-an editable list often doesn't have input widgets (such as TextBox) inside it.
+an editable list often does not have input widgets (such as TextBox) inside it.
 Instead, there is an external editor widget beside the list,
 and the list itself is used to pick a current editing item.
 It may also have up/down buttons beside it to adjust the order of items.

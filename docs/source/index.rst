@@ -1,6 +1,9 @@
 The RxGui Project
 =================
 
+.. image :: api/todo.png
+    :scale: 62%
+
 **RxGui** is a high-level GUI framework based on Qt Widgets.
 It enables developers to create classic widget apps
 with a modern paradigm featuring the power of `ReactiveX <https://reactivex.io/>`_.
@@ -14,15 +17,16 @@ The paradigm is similar to modern Web frameworks (React, Vue, Angular)
 but refined to leverage the full power of ReactiveX.
 It will be easy to learn for Web developers who are familiar with RxJS.
 
-This documentation assumes prior knowledge about ReactiveX
-and basic functional programming practices.
-
 Links
 -----
 
 * `Ask Questions on Discord <https://discord.gg/4guHbjeXK3>`_
 
 * `Browse Source Code on GitHub <https://github.com/maze1024x/RxGui>`_
+
+.. Note::
+    This documentation assumes prior knowledge about ReactiveX
+    and basic functional programming practices.
 
 Table of Contents
 =================
