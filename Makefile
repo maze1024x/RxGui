@@ -58,11 +58,15 @@ interpreter: deps
 	go build $(ASAN_FLAG) -buildmode=c-shared -o build/$(DLLNAME) main.lib.go
 	chmod a+x build/$(DLLNAME)
 
-release: qt-clean interpreter
+release: interpreter
 ifeq ($(ASAN_ENABLED),1)
 	@echo "*** cannot make release with ASAN enabled"
 	exit 1
 endif
-	cd build && tar -vcapf release.tar.gz `ls * | grep -v -e "go_test_\|release"`
+ifdef OS
+	zip -j build/release.zip build/*.exe build/*.h build/*.dll $(ldd build/$(EXENAME) | grep mingw64 | cut -f 2 | cut -f 1 -d ' ' | xargs -i echo /mingw64/bin/"{}")
+else
+	cd build && tar -vcapf release.tar.gz `ls * | grep -v "release"`
+endif
 
 
