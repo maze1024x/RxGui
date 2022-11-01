@@ -33,6 +33,7 @@
 #include <QVariantList>
 #include <QTimer>
 #include <QUuid>
+#include <QRegularExpression>
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -750,11 +751,34 @@ int QtMessageBoxGetResultButton(void* msgbox_ptr) {
     return msgbox->result();
 }
 
+QString GetFirstExtensionFromFilterText(QString text) {
+    QRegularExpression re("\\*\\.([A-Za-z0-9]+)");
+    QRegularExpressionMatch match = re.match(text);
+    if (match.hasMatch()) {
+        return match.captured(1);
+    } else {
+        return "";
+    }
+}
 void* QtCreateFileDialog(int mode_, QtString filters_) {
     QFileDialog::FileMode mode = (QFileDialog::FileMode) mode_;
     QString filters = UnwrapString(filters_);
     QFileDialog* d = new QFileDialog(nullptr);
     d->setWindowModality(Qt::ApplicationModal);
+    #ifdef _WIN32
+    // do nothing
+    #else
+    QString de = QString(qgetenv("XDG_SESSION_DESKTOP"));
+    if (de.contains("kde", Qt::CaseInsensitive)) {
+        // do nothing
+    } else {
+        d->setOption(QFileDialog::DontUseNativeDialog);
+        d->setDefaultSuffix(GetFirstExtensionFromFilterText(filters));
+        QObject::connect(d, &QFileDialog::filterSelected, d, [d] (const QString& filter) -> void {
+            d->setDefaultSuffix(GetFirstExtensionFromFilterText(filter));
+        });
+    }
+    #endif
     if (mode_ == QtFileDialogModeSave) {
         d->setAcceptMode(QFileDialog::AcceptSave);
     } else {
