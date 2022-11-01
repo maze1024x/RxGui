@@ -4,7 +4,7 @@ Installation
 Downloading Binary Files
 ========================
 
-Binary files for Linux(x86_64) and Windows(x64) are available at the
+Binary files for x86-64 Linux and Windows are available at the
 `GitHub Releases Page
 <https://github.com/maze1024x/RxGui/releases>`_.
 
