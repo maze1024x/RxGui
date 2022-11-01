@@ -192,7 +192,10 @@ func (p Prop) Bind(o Observable, w Widget, h RuntimeHandle) Observable {
 }
 
 func DialogGenerate(pub DataPublisher) (func(Object), func()) {
-    return pub.observer.value, pub.observer.complete
+    return pub.observer.value, func() {
+        // Windows API cannot immediately open successive standard dialogs.
+        qt.Schedule(pub.observer.complete)
+    }
 }
 func ConnectActionTrigger(a Action, h RuntimeHandle) Observable {
     return onSync(func() func(qt.Pkg, func()) {
