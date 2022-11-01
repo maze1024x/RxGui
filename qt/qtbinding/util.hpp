@@ -39,6 +39,8 @@
 #define RefScreen1remSize 16
 #define RefScreenMinEdgeLength 768
 
+QString SelectionColorWorkaroundStyle();
+
 QtString WrapString(QString str);
 QString UnwrapString(QtString str);
 QIcon UnwrapIcon(QtIcon icon);

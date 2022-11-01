@@ -1,7 +1,31 @@
 #include <QApplication>
+#include <QPalette>
+#include <QColor>
 #include <QScreen>
 #include "util.hpp"
 
+
+QString SelectionColorWorkaroundStyle() {
+    #ifdef _WIN32
+    return "";
+    #else
+    QPalette p = QGuiApplication::palette();
+    QColor t = p.color(QPalette::Text);
+    QColor ht = p.color(QPalette::HighlightedText);
+    if (abs(t.lightness() - ht.lightness()) < 64) {
+        return "";
+    } else {
+        QColor h = p.color(QPalette::Highlight);
+        if (ht.lightness() >= 128) {
+            h = h.lighter(200);
+        } else {
+            h = h.darker(200);
+        }
+        return QString("DefaultListWidget { selection-background-color: %1; }")
+            .arg(h.name());
+    }
+    #endif
+}
 
 QtString WrapString(QString str) {
     QString* ptr = new QString;

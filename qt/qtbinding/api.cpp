@@ -133,6 +133,7 @@ void QtInit() {
         QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
         app = new QApplication(fake_argc, fake_argv);
         app->setQuitOnLastWindowClosed(false);
+        app->setStyleSheet(app->styleSheet() + "\n" + SelectionColorWorkaroundStyle());
         QFont f = app->font();
         f.setPixelSize(Get1remPixels());
         app->setFont(f);
