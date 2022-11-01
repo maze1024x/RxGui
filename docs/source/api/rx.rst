@@ -131,4 +131,9 @@ Subject
     function Loopback[T] { k Lambda[$[T],$[T]] } $[T]
     function SkipSync[T] { o $[T] } $[T]
 
+.. code-block:: none
+
+    method Subject.SampleValue $[T]
+    function Sample[T] { o $[T] } $[T]
+
 

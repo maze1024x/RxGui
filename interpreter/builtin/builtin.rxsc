@@ -300,6 +300,7 @@ type Subject[T] native
 function variadic CreateSubject[T] { replay Int(0), items List[T] } $[Subject[T]] native('CreateSubject')
 method Subject.$ $[T] { this.Values }
 method Subject.Values $[T] native('SubjectValues')
+method Subject.SampleValue $[T] { Sample(this.Values) }
 operator << [T] { s Subject[T], o $[T] } $[Null] { (s plug o) }
 operator <- [T] { s Subject[T], v T } $[Null] { (s push v) }
 operator plug[T] { s Subject[T], o $[T] } $[Null] native('SubjectPlug')
@@ -307,6 +308,7 @@ operator push [T] { s Subject[T], v T } $[Null] { s | plug($(v)) | end-with(Null
 function Multicast[T] { o $[T] } $[$[T]] native('Multicast')
 function Loopback[T] { k Lambda[$[T],$[T]] } $[T] native('Loopback')
 function SkipSync[T] { o $[T] } $[T] native('SkipSync')
+function Sample[T] { o $[T] } $[T] { ($(Null) map-to-latest-from o) }
 
 type State[T] record {
     <Subject> Subject[T]
@@ -913,7 +915,7 @@ type Editor[T] record {
 function Editor[T] {
     initial  EditorDocument[T],
     content  Lambda[T,Hook[EditorView[T]]],
-    open     EditorOpenBehavior[T] ({ _ => $() }),
+    open     EditorOpenBehavior[T] ({ => $() }),
     save     EditorSaveBehavior[T] ({ doc => $(doc.File?) })
         }    Hook[Editor[T]]
         {
@@ -947,12 +949,6 @@ method Editor.Modified $[Bool] {
     <ObjectPairEqualities>((this.LastSave combine-latest this.Output))
         | map(Not)
 }
-function EditorDirty[T] { e Editor[T] } { T/== ==[T] } $[Bool] {
-    (e.LastSave combine-latest e.Output)
-        | map(T/==.Operator)
-        | distinct-until-changed()
-        | map(Not)
-}
 operator bind-override[T] { e Editor[T], values $[T] } $[Null] {
     (e.<Override> plug values)
 }
@@ -960,42 +956,55 @@ operator bind-reset[T] { e Editor[T], triggers $[Null] } $[Null] {
     (e bind-override (triggers map-to-latest-from e.LastSave))
 }
 operator bind-open[T] { e Editor[T], triggers $[Null] } $[Null] {
-    @concat-map (_, modified) = (triggers with-latest-from e.Modified),
+    @concat-map modified = (triggers map-to-latest-from e.Modified),
+    @await <EditorOpen>(e, modified),
+    return ()
+}
+operator bind-save[T] { e Editor[T], triggers $[Null] } $[Null] {
+    @concat-map doc = (triggers map-to-latest-from e.Document),
+    @await <EditorSave>(e, doc),
+    return ()
+}
+operator bind-save-as[T] { e Editor[T], triggers $[Null] } $[Null] {
+    @concat-map doc = (triggers map-to-latest-from e.Document),
+    @await <EditorSave>(e, doc.(File?).Assign(Null)),
+    return ()
+}
+operator ask-for-save[T] { e Editor[T], message String, title String('Save Changes') } $[Null] {
+    @await doc = Sample(e.Document),
+    @await modified = Sample(e.Modified),
+    if (modified) {
+        @await choice = ShowSaveDiscardCancel(message, title),
+        when (choice) {
+            Save => {
+                @await <EditorSave>(e, doc),
+                return (Null)
+            },
+            Discard =>
+                return (Null)
+        }
+    } else {
+        return (Null)
+    }
+}
+type EditorOpenBehavior[T] interface {
+    Open Lambda[Bool,$[EditorDocument[T]]]
+}
+function <EditorOpen>[T] { e Editor[T], modified Bool } $[Null] {
     @await new-doc = { e.<Open>(modified) | log-error() },
     @await (e.<File> <- new-doc.File?),
     @await (e.<LastSave> <- new-doc.Data),
     @await (e.<Override> <- new-doc.Data),
     return (Null)
 }
-operator bind-save[T] { e Editor[T], triggers $[Null] } $[Null] {
-    @concat-map (_, doc) = (triggers with-latest-from e.Document),
-    @await new-file = { e.<Save>(doc) | log-error() },
-    @await (e.<File> <- new-file),
-    @await (e.<LastSave> <- doc.Data),
-    return (Null)
-}
-operator bind-save-as[T] { e Editor[T], triggers $[Null] } $[Null] {
-    let doc = (e.Document map { doc => doc.(File?).Assign(Null) }),
-    @concat-map (_, doc) = (triggers with-latest-from doc),
-    @await new-file = { e.<Save>(doc) | log-error() },
-    @await (e.<File> <- new-file),
-    @await (e.<LastSave> <- doc.Data),
-    return (Null)
-}
-method Editor.Open $[Null] {
-    this | bind-open($(Null))
-}
-method Editor.Save $[Null] {
-    this | bind-save($(Null))
-}
-method Editor.SaveAs $[Null] {
-    this | bind-save-as($(Null))
-}
-type EditorOpenBehavior[T] interface {
-    Open Lambda[Bool,$[EditorDocument[T]]]
-}
 type EditorSaveBehavior[T] interface {
     Save Lambda[EditorDocument[T],$[Maybe[File]]]
+}
+function <EditorSave>[T] { e Editor[T], doc EditorDocument[T] } $[Null] {
+    @await new-file = { e.<Save>(doc) | log-error() },
+    @await (e.<File> <- new-file),
+    @await (e.<LastSave> <- doc.Data),
+    return (Null)
 }
 type EditorDocument[T] record {
     File?  Maybe[File],

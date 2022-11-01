@@ -31,11 +31,11 @@ function ShowNewEditorWindow { doc EditorDocument[String], bus Subject[EditorDoc
                 @await ShowCritical(err.Message),
                 return ()
             }},
-            save: { (f?,text) => {
-                @await f = if (let f = f?) { $(f) }
+            save: { doc => {
+                @await f = if (let f = doc.File?) { $(f) }
                            else { GetFileToSave('Text (*.txt)') },
                 @catch (err, _) = {
-                    @await WriteTextFile(f, text),
+                    @await WriteTextFile(f, doc.Data),
                     return (Just(f))
                 },
                 @await ShowCritical(err.Message),
@@ -59,16 +59,8 @@ function ShowNewEditorWindow { doc EditorDocument[String], bus Subject[EditorDoc
         let layout = Column(e.Widget),
         let tool-bar = ToolBar(TextBesideIcon, create, open, save, save-as),
         Window { title, layout, tool-bar, exit: { closes => {
-            @exhaust-map (_,modified) = (closes with-latest-from e.Modified),
-            if (modified) {
-                @await op = ShowSaveDiscardCancel('Document has unsaved changes.'),
-                when (op) {
-                    Save => e.Save,
-                    Discard => return (Null)
-                }
-            } else {
-                return (Null)
-            }
+            @exhaust-map closes,
+            (e ask-for-save 'Document has unsaved changes.')
         }}}
     })
 }

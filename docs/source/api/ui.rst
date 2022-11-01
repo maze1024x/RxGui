@@ -713,7 +713,7 @@ Editor
     function Editor[T] {
         initial  EditorDocument[T],
         content  Lambda[T,Hook[EditorView[T]]],
-        open     EditorOpenBehavior[T] ({ _ => $() }),
+        open     EditorOpenBehavior[T] ({ => $() }),
         save     EditorSaveBehavior[T] ({ doc => $(doc.File?) })
     }
     Hook[Editor[T]]
@@ -750,7 +750,6 @@ Editor
     method Editor.Output $[T]
     method Editor.LastSave $[T]
     method Editor.Modified $[Bool]
-    function EditorDirty[T] { e Editor[T] } { T/== ==[T] } $[Bool]
 
 .. code-block:: none
 
@@ -759,9 +758,7 @@ Editor
     operator bind-open[T] { e Editor[T], triggers $[Null] } $[Null]
     operator bind-save[T] { e Editor[T], triggers $[Null] } $[Null]
     operator bind-save-as[T] { e Editor[T], triggers $[Null] } $[Null]
-    method Editor.Open $[Null]
-    method Editor.Save $[Null]
-    method Editor.SaveAs $[Null]
+    operator ask-for-save { e Editor[T], message String, title String('Save Changes') } $[Null]
 
 Todo List Example
 =================
