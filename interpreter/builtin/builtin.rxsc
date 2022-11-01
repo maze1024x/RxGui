@@ -965,14 +965,14 @@ operator bind-open[T] { e Editor[T], triggers $[Null] } $[Null] {
     @await (e.<File> <- new-doc.File?),
     @await (e.<LastSave> <- new-doc.Data),
     @await (e.<Override> <- new-doc.Data),
-    return ()
+    return (Null)
 }
 operator bind-save[T] { e Editor[T], triggers $[Null] } $[Null] {
     @concat-map (_, doc) = (triggers with-latest-from e.Document),
     @await new-file = { e.<Save>(doc) | log-error() },
     @await (e.<File> <- new-file),
     @await (e.<LastSave> <- doc.Data),
-    return ()
+    return (Null)
 }
 operator bind-save-as[T] { e Editor[T], triggers $[Null] } $[Null] {
     let doc = (e.Document map { doc => doc.(File?).Assign(Null) }),
@@ -980,16 +980,16 @@ operator bind-save-as[T] { e Editor[T], triggers $[Null] } $[Null] {
     @await new-file = { e.<Save>(doc) | log-error() },
     @await (e.<File> <- new-file),
     @await (e.<LastSave> <- doc.Data),
-    return ()
+    return (Null)
 }
 method Editor.Open $[Null] {
-    this | bind-open($(Null)) | end-with(Null)
+    this | bind-open($(Null))
 }
 method Editor.Save $[Null] {
-    this | bind-save($(Null)) | end-with(Null)
+    this | bind-save($(Null))
 }
 method Editor.SaveAs $[Null] {
-    this | bind-save-as($(Null)) | end-with(Null)
+    this | bind-save-as($(Null))
 }
 type EditorOpenBehavior[T] interface {
     Open Lambda[Bool,$[EditorDocument[T]]]
