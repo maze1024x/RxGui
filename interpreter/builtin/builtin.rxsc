@@ -934,9 +934,9 @@ function Editor[T] {
     Hook(new Editor(r.Widget, output, override, last-save, file, open, save)) }
 //
 method Editor.Document $[EditorDocument[T]] {
-    new:$ EditorDocument(this.File, this.Output)
+    new:$ EditorDocument(this.File?, this.Output)
 }
-method Editor.File $[Maybe[File]] {
+method Editor.File? $[Maybe[File]] {
     this.<File>.$
 }
 method Editor.Output $[T] {

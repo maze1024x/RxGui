@@ -51,7 +51,7 @@ function ShowNewEditorWindow { doc EditorDocument[String], bus Subject[EditorDoc
         @use Effect((e bind-save save.Triggers)),
         @use Effect((e bind-save-as save-as.Triggers)),
         let title = {
-            @map (modified,file?) = (e.Modified combine-latest e.File),
+            @map (modified,file?) = (e.Modified combine-latest e.File?),
             let file-desc = file? | map({ f => f.String }) | ??('Untitiled'),
             let modified-desc = if (modified) { '*' } else { '' },
             String('Text Editor - ', file-desc, modified-desc)

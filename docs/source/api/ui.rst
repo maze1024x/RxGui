@@ -746,7 +746,7 @@ Editor
 .. code-block:: none
 
     method Editor.Document $[EditorDocument[T]]
-    method Editor.File $[Maybe[File]]
+    method Editor.File? $[Maybe[File]]
     method Editor.Output $[T]
     method Editor.LastSave $[T]
     method Editor.Modified $[Bool]
