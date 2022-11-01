@@ -3,7 +3,9 @@ package main
 import (
     "fmt"
     "os"
+    "strings"
     "runtime"
+    "runtime/debug"
     "rxgui/qt"
     "rxgui/util"
     "rxgui/util/argv"
@@ -16,7 +18,7 @@ import (
 )
 
 
-const Version = "0.0.0 experimental"
+const Version = "0.90-beta"
 const SourceFilePathPrompt = "Input a source file path or press Enter to start REPL:"
 
 type Args struct {
@@ -28,7 +30,20 @@ type Args struct {
 
 var Commands = map[string] func(*Args) {
     "version": func(_ *Args) {
-        fmt.Println(Version)
+        var buf strings.Builder
+        buf.WriteString(Version)
+        if info, ok := debug.ReadBuildInfo(); ok {
+            for _, item := range info.Settings {
+                // not working: https://github.com/golang/go/issues/51279
+                if strings.HasPrefix(item.Key, "vcs.") {
+                    buf.WriteRune(' ')
+                    buf.WriteString(item.Key)
+                    buf.WriteRune('=')
+                    buf.WriteString(item.Value)
+                }
+            }
+        }
+        fmt.Println(buf.String())
     },
     "parse": func(args *Args) {
         var L = len(args.Positional)
