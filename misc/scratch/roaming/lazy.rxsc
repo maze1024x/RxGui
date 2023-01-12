@@ -1,0 +1,25 @@
+namespace ::
+
+entry {
+    ShowWindow({
+        let data = ('The quick brown fox jumps over lazy dog' split ' '),
+        @use list = ListView($(data), { item => item }, { (item,info) => {
+            @use label = Label(item),
+            @use wrapper = WrapperWithMargins(Row(label.Widget)),
+            @use loading = Wrapper(Aligned(Center, 'Loading...')),
+            @use extension = LazyReloadable(StartWith(Hook(loading.Widget), {
+                @map SetTimeout(3000),
+                @use ticker = Label(SetInterval(1000) | start-with(0) | map({ n => String(info.Key, ': ', n) })),
+                @use ticker-wrapper = Wrapper(Aligned(Center, ticker.Widget)),
+                Hook(ticker-wrapper.Widget)
+            })),
+            ItemView(wrapper.Widget, extension.Widget)
+        }}),
+        @use placeholder = Wrapper(Aligned(Center, '  Placeholder  ')),
+        @use extension = Switchable((list.Extension map { w => (w ?? placeholder.Widget) })),
+        @use splitter = Splitter(list.Widget, extension.Widget),
+        Window($('Lazy Reloadable'), Column(splitter.Widget))
+    })
+}
+
+

@@ -1,0 +1,11 @@
+namespace ::
+
+entry {
+    ShowWindow({
+        let text = SetInterval(1000) | map({ n => n.String }) | start-with('-'),
+        @use label = Label(text, Center),
+        Window($('Ticker'), Row(label.Widget))
+    })
+}
+
+

@@ -1,0 +1,43 @@
+namespace ::
+
+type Item record { Title String, Body String }
+
+entry {
+    ShowWindow({
+        @use add = IconButton(Icon('list-add'), 'Add'),
+        @use remove = IconButton(Icon('list-remove'), 'Remove'),
+        @use move-top = IconButton(Icon('go-top'), 'Move to Top'),
+        @use move-up = IconButton(Icon('go-up'), 'Move Up'),
+        @use move-bottom = IconButton(Icon('go-bottom'), 'Move to Bottom'),
+        @use move-down = IconButton(Icon('go-down'), 'Move Down'),
+        let ops = Column(add.Widget, remove.Widget, move-top.Widget, move-up.Widget, move-down.Widget, move-bottom.Widget, Spacer()),
+        const initial = List(new Item('Foo', 'Hello World'), new Item('Bar', '123456'), new Item('Baz', 'lorem ipsum')),
+        @use list = ListEditView { select: MaybeMultiple, initial, content: { (item,_) => {
+            @use title = TextBox(item.Title),
+            @use body = TextArea(item.Body),
+            @use label = ElidedLabel(title.Text),
+            @use internal = WrapperWithMargins(Row(label.Widget)),
+            @use external = Wrapper(Column(title.Widget, body.Widget)),
+            let update = new:$ Item(title.Text, body.Text),
+            ItemEditView(internal.Widget, external.Widget, update)
+        }}},
+        @use Effect(list | bind-update {
+            prepend: (add.Clicks map-to new Item('New Item', '')),
+            delete: remove.Clicks,
+            move-bottom: move-bottom.Clicks,
+            move-down: move-down.Clicks,
+            move-up: move-up.Clicks,
+            move-top: move-top.Clicks
+        }),
+        @use Effect(DebugWatch('output', list.Output)),
+        @use left = Wrapper(Row(ops, list.Widget)),
+        @use placeholder = Wrapper(Aligned(Center, 'No Item Selected')),
+        @use s = Switchable((list.Extension map { w => (w ?? placeholder.Widget) })),
+        @use right = GroupBox('Item Editor', Row(s.Widget)),
+        @use splitter = Splitter(left.Widget, right.Widget),
+        Window {
+            title: $('Classic Editable List'), width: 480, height: 240,
+            layout: Row(splitter.Widget)
+        }
+    })
+}

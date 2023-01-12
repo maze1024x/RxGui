@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>480</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Naive Debugger</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/Tango-system-search-modified.png</normaloff>:/Tango-system-search-modified.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_6">
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="tabPosition">
+       <enum>QTabWidget::North</enum>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="everything">
+       <attribute name="icon">
+        <iconset resource="resources.qrc">
+         <normaloff>:/Tango-go-home.png</normaloff>:/Tango-go-home.png</iconset>
+       </attribute>
+       <attribute name="title">
+        <string>&amp;Everything</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <widget class="QTextBrowser" name="everythingText">
+          <property name="placeholderText">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="repl">
+       <attribute name="icon">
+        <iconset resource="resources.qrc">
+         <normaloff>:/Tango-utilities-terminal.png</normaloff>:/Tango-utilities-terminal.png</iconset>
+       </attribute>
+       <attribute name="title">
+        <string>&amp;REPL</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QTextBrowser" name="replText">
+          <property name="placeholderText">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="inspection">
+       <attribute name="icon">
+        <iconset resource="resources.qrc">
+         <normaloff>:/Tango-system-search-modified.png</normaloff>:/Tango-system-search-modified.png</iconset>
+       </attribute>
+       <attribute name="title">
+        <string>Ins&amp;pection</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QTextBrowser" name="inspectionText">
+          <property name="placeholderText">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="io">
+       <attribute name="icon">
+        <iconset resource="resources.qrc">
+         <normaloff>:/Tango-drive-harddisk.png</normaloff>:/Tango-drive-harddisk.png</iconset>
+       </attribute>
+       <attribute name="title">
+        <string>&amp;Input/Output</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QTextBrowser" name="ioText">
+          <property name="placeholderText">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="cmdInput">
+      <property name="placeholderText">
+       <string>Input Command Here</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>

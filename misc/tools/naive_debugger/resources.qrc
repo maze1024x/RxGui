@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Tango-drive-harddisk.png</file>
+        <file>Tango-system-search-modified.png</file>
+        <file>Tango-utilities-terminal.png</file>
+        <file>Tango-go-home.png</file>
+    </qresource>
+</RCC>

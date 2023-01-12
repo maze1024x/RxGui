@@ -1,0 +1,1080 @@
+namespace ::
+
+
+type <InvalidType> interface {}
+type <GenericType> native
+
+type IntoReflectType[T] native
+type IntoReflectValue[T] native
+type DummyReflectType native
+const ReflectType DummyReflectType native('ReflectType')
+function DebugInspect[T] { hint String, v IntoReflectValue[T] } T native('DebugInspect')
+function DebugExpose[T] { name String, v IntoReflectValue[T] } $[Null] native('DebugExpose')
+function DebugTrace[T] { hint String, o IntoReflectValue[$[T]] } $[T] native('DebugTrace')
+function DebugWatch[T] { hint String, o IntoReflectValue[$[T]] } $[Null] native('DebugWatch')
+function Serialize[T] { v IntoReflectValue[T] } $[String] native('Serialize')
+function Deserialize[T] { s String, t IntoReflectType[T] } $[T] native('Deserialize')
+function <ObjectPairEqualities>[T] { o $[Pair[T,T]] } $[Bool] native('ObjectPairEqualities')
+
+type Null native
+const Null Null native('Null')
+type Error native
+function <Error> { msg String } Error native('Error')
+function variadic Error { msg List[~String] } Error { <Error>(String{fragments:msg}) }
+method Error.Message String native('ErrorMessage')
+method Error.IsCancel Bool native('ErrorIsCancel')
+operator wrap { err Error, msg String } Error native('ErrorWrap')
+function Undefined[T] { msg String('') } T native('Undefined')
+
+type Bool(~String) native
+const No  Bool native('BoolNo')
+const Yes Bool native('BoolYes')
+function Not { p Bool }         Bool native('BoolNot')
+operator and { p Bool, q Bool } Bool native('BoolAnd')
+operator or  { p Bool, q Bool } Bool native('BoolOr')
+operator ==  { p Bool, q Bool } Bool native('BoolEqual')
+operator assert[T] { ok Bool, k Lambda[Null,T] } T native('BoolAssert')
+
+type Ordering(~String) enum { L<R, L=R, L>R }
+operator == { o1 Ordering, o2 Ordering } Bool { (([Int]) o1 == o2) }
+type == [T] interface { Operator Lambda[Pair[T,T],Bool] }
+type <  [T] interface { Operator Lambda[Pair[T,T],Bool] }
+type <> [T] interface { Operator Lambda[Pair[T,T],Ordering] }
+operator != [T] { a T, b T } { T/== ==[T] } Bool { Not(T/==(a,b)) }
+operator >  [T] { a T, b T } { T/< <[T] }   Bool { T/<(b,a) }
+operator <= [T] { a T, b T } { T/< <[T] }   Bool { Not(T/<(b,a)) }
+operator >= [T] { a T, b T } { T/< <[T] }   Bool { Not(T/<(a,b)) }
+function Min[T] { a T, b T } { T/< <[T] }   T    { if (T/<(a,b)) { a } else { b } }
+function Max[T] { a T, b T } { T/< <[T] }   T    { if (T/<(b,a)) { a } else { b } }
+
+type Int(~String) native
+operator + { a Int, b Int } Int native('IntPlus')
+operator - { a Int, b Int } Int native('IntMinus')
+operator * { a Int, b Int } Int native('IntTimes')
+operator / { a Int, b Int } Int native('IntQuo')
+operator % { a Int, b Int } Int native('IntRem')
+operator ^ { a Int, b Int } Int native('IntPow')
+operator == { a Int, b Int } Bool     native('IntEqual')
+operator <  { a Int, b Int } Bool     native('IntLessThan')
+operator <> { a Int, b Int } Ordering native('IntCompare')
+
+type Float(~String) native
+operator + { x Float, y Float } Float native('FloatPlus')
+operator - { x Float, y Float } Float native('FloatMinus')
+operator * { x Float, y Float } Float native('FloatTimes')
+operator / { x Float, y Float } Float native('FloatQuo')
+operator % { x Float, y Float } Float native('FloatRem')
+operator ^ { x Float, y Float } Float native('FloatPow')
+operator == { x Float, y Float } Bool native('FloatEqual')
+operator <  { x Float, y Float } Bool native('FloatLessThan')
+function Floor { x Float } Float native('Floor')
+function Ceil  { x Float } Float native('Ceil')
+function Round { x Float } Float native('Round')
+function Sqrt  { x Float } Float native('Sqrt')
+function Cbrt  { x Float } Float native('Cbrt')
+function Exp   { x Float } Float native('Exp')
+function Log   { x Float } Float native('Log')
+function Sin   { x Float } Float native('Sin')
+function Cos   { x Float } Float native('Cos')
+function Tan   { x Float } Float native('Tan')
+function Asin  { x Float } Float native('Asin')
+function Acos  { x Float } Float native('Acos')
+function Atan  { x Float } Float native('Atan')
+function Atan2 { y Float, x Float } Float native('Atan2')
+const E  Float { Exp(1) }
+const PI Float { Acos(-1) }
+method Float.Int Int   native('FloatInt')
+method Int.Float Float native('IntFloat')
+method Float.Normal   Bool native('FloatNormal')
+method Float.NaN      Bool native('FloatNaN')
+method Float.Infinite Bool native('FloatInfinite')
+const NaN Float { (0.0 / 0) }
+const +Inf Float { (1.0 / 0) }
+const -Inf Float { (-1.0 / 0) }
+
+type Char(~String) native
+function Char { value Int } Char native('Char')
+method Char.Int Int native('CharInt')
+method Char.Utf8Size Int native('CharUtf8Size')
+operator == { a Char, b Char } Bool     native('CharEqual')
+operator <  { a Char, b Char } Bool     native('CharLessThan')
+operator <> { a Char, b Char } Ordering native('CharCompare')
+
+type String native
+function variadic String { fragments List[~String] } String native('String')
+function StringFromChars { chars List[Char] } String native('StringFromChars')
+function Quote { s String } String native('Quote')
+function Unquote { s String } Maybe[String] native('Unquote')
+method String.Empty Bool native('StringEmpty')
+method String.Chars List[Char] native('StringChars')
+method String.FirstChar Maybe[Char] native('StringFirstChar')
+method String.NumberOfChars Int native('StringNumberOfChars')
+method String.Utf8Size Int native('StringUtf8Size')
+operator == { a String, b String } Bool     native('StringEqual')
+operator <  { a String, b String } Bool     native('StringLessThan')
+operator <> { a String, b String } Ordering native('StringCompare')
+operator shift { s String } Maybe[Pair[Char,String]] native('StringShift')
+operator reverse { s String } String native('StringReverse')
+operator join  { l List[String], sep String } String native('ListStringJoin')
+operator split { s String, sep String } List[String] native('StringSplit')
+operator cut   { s String, sep String } Maybe[Pair[String,String]] native('StringCut')
+operator has-prefix { s String, prefix String } Bool native('StringHasPrefix')
+operator has-suffix { s String, suffix String } Bool native('StringHasSuffix')
+operator trim-prefix { s String, prefix String } String native('StringTrimPrefix')
+operator trim-suffix { s String, suffix String } String native('StringTrimSuffix')
+operator trim { s String, chars List[Char] } String native('StringTrim')
+operator trim-left { s String, chars List[Char] } String native('StringTrimLeft')
+operator trim-right { s String, chars List[Char] } String native('StringTrimRight')
+
+type RegExp(~String) native
+method RegExp.String String native('RegExpString')
+operator advance { s String, re RegExp } Maybe[Pair[String,String]] native('StringAdvance')
+operator satisfy { s String, re RegExp } Bool native('StringSatisfy')
+operator replace { s String, re RegExp, f Lambda[String,String] } String native('StringReplace')
+
+type ~String interface { String String }
+method Bool.String     String native('BoolString')
+method Ordering.String String native('OrderingString')
+method Int.String   String native('IntString')
+method Float.String String native('FloatString')
+method Char.String  String native('CharString')
+
+function ParseInt { s String } Maybe[Int] native('ParseInt')
+function ParseFloat { s String } Maybe[Float] native('ParseFloat')
+
+type Bytes native
+// no bytes api for now
+
+type List[T] native
+function variadic List[T] { items List[T] } List[T] { items }
+function variadic ListConcat[T] { lists List[List[T]] } List[T] native('ListConcat')
+function Cons[T] { head T, tail List[T] } List[T] native('Cons')
+function Count { n Int } List[Int] native('Count')
+method List.Empty Bool native('ListEmpty')
+method List.First Maybe[T] native('ListFirst')
+method List.Length Int native('ListLength')
+method List.Seq Seq[T] native('ListSeq')
+method List.$ $[T] { ${items:this} }
+operator shift[T]   { l List[T] } Maybe[Pair[T,List[T]]] native('ListShift')
+operator prepend[T] { l List[T], item T } List[T] { Cons(item, l) }
+operator reverse[T] { l List[T] } List[T] native('ListReverse')
+operator sort[T] { l List[T] } { T/< <[T] } List[T] native('ListSort')
+operator take[T] { l List[T], n Int } List[T] native('ListTake')
+operator with-index[T] { l List[T] } List[Pair[T,Int]]  native('ListWithIndex')
+operator map[A,B]  { l List[A], f Lambda[A,B] } List[B] native('ListMap')
+operator map?[A,B] { l List[A], f Lambda[A,Maybe[B]] } List[B] native('ListDeflateMap')
+operator map*[A,B] { l List[A], f Lambda[A,List[B]] } List[B] native('ListFlatMap')
+operator filter[T] { l List[T], f Lambda[T,Bool] } List[T] native('ListFilter')
+operator scan[A,B] { l List[A], v B, f Lambda[Pair[B,A],B] } List[B] native('ListScan')
+operator fold[A,B] { l List[A], v B, f Lambda[Pair[B,A],B] } B native('ListFold')
+
+type Seq[T] native
+function variadic Seq[T] { items List[T] } Seq[T] { items.Seq }
+method Seq.Empty Bool native('SeqEmpty')
+method Seq.Last Maybe[T] native('SeqLast')
+method Seq.Length Int native('SeqLength')
+method Seq.List List[T] native('SeqList')
+operator append[T] { s Seq[T], item T } Seq[T] native('SeqAppend')
+operator append?[T] { s Seq[T], item? Maybe[T] } Seq[T] native('SeqDeflateAppend')
+operator append*[T] { s Seq[T], items List[T] } Seq[T] native('SeqFlatAppend')
+operator sort[T] { s Seq[T] } { T/< <[T] } Seq[T] native('SeqSort')
+operator filter[T] { s Seq[T], f Lambda[T,Bool] } Seq[T] native('SeqFilter')
+
+type Queue[T] native
+function variadic Queue[T] { items List[T] } Queue[T] native('Queue')
+method Queue.Empty Bool native('QueueEmpty')
+method Queue.Size  Int  native('QueueSize')
+method Queue.First Maybe[T] native('QueueFirst')
+method Queue.List List[T] native('QueueList')
+operator shift[T]  { q Queue[T] } Maybe[Pair[T,Queue[T]]] native('QueueShift')
+operator append[T] { q Queue[T], item T } Queue[T] native('QueueAppend')
+
+type Heap[T] native
+function variadic Heap[T] { items List[T] } { T/< <[T] } Heap[T] native('Heap')
+method Heap.Empty Bool native('HeapEmpty')
+method Heap.Size  Int  native('HeapSize')
+method Heap.First Maybe[T] native('HeapFirst')
+method Heap.List List[T] native('HeapList')
+operator shift[T]  { h Heap[T] } Maybe[Pair[T,Heap[T]]] native('HeapShift')
+operator insert[T] { h Heap[T], item T } Heap[T] native('HeapInsert')
+
+type Set[T] native
+function variadic Set[T] { items List[T] } { T/<> <>[T] } Set[T] native('Set')
+method Set.Empty Bool native('SetEmpty')
+method Set.Size  Int  native('SetSize')
+method Set.List List[T] native('SetList')
+operator has[T] { s Set[T], item T } Bool native('SetHas')
+operator delete[T] { s Set[T], item T } Set[T] native('SetDelete')
+operator insert[T] { s Set[T], item T } Set[T] native('SetInsert')
+
+type Map[K,V] native
+function variadic Map[K,V] { entries List[Pair[K,V]] } { K/<> <>[K] } Map[K,V] native('Map')
+method Map.Empty Bool native('MapEmpty')
+method Map.Size  Int  native('MapSize')
+method Map.Keys    List[K] native('MapKeys')
+method Map.Values  List[V] native('MapValues')
+method Map.Entries List[Pair[K,V]] native('MapEntries')
+operator has[K,V] { m Map[K,V], key K } Bool native('MapHas')
+operator lookup[K,V] { m Map[K,V], key K } Maybe[V] native('MapLookup')
+operator delete[K,V] { m Map[K,V], key K } Map[K,V] native('MapDelete')
+operator insert[K,V] { m Map[K,V], pair Pair[K,V] } Map[K,V] native('MapInsert')
+
+/// Observable
+type $[T] native
+function variadic $[T] { items List[T] } $[T] native('Observable')
+function variadic return[T] { items List[T] } $[T] { ${items} }
+function variadic Merge[T] { items List[$[T]] } $[T] { items | merge() }
+function variadic Concat[T] { items List[$[T]] } $[T] { items | concat() }
+function StartWith[T] { v T, o $[T] } $[T] { o | start-with(v) }
+function Go[T] { k Lambda[Null,T] } $[T] native('Go')
+function ForkJoin[T] { items List[$[T]], n Int(NumCPU) } $[List[T]] { items | fork-join(n) }
+function WithChildContext[T] { o $[T] } $[T] native('WithChildContext')
+function WithCancelTrigger[T] { cancel $[Null], o $[T] } $[T] native('WithCancelTrigger')
+function WithCancelTimeout[T] { ms Int, o $[T] } $[T] native('WithCancelTimeout')
+function SetTimeout { ms Int } $[Null] native('SetTimeout')
+function SetInterval { ms Int, n Int(-1) } $[Int] native('SetInterval')
+function Throw[T] { err Error } $[T] native('Throw')
+function Crash[T] { err Error } $[T] native('Crash')
+method $.Result $[Result[T]] { this | take-last() | map({ value => Success(value) }) | catch ({ (err,_) => $(err) }) }
+operator catch[T] { o $[T], f Lambda[Pair[Error,$[T]],$[T]] } $[T] native('ObservableCatch')
+operator retry[T] { o $[T], n Int(-1) } $[T] native('ObservableRetry')
+operator log-error[T] { o $[T] } $[T] native('ObservableLogError')
+operator distinct-until-changed[T] { o $[T] } { T/== ==[T] } $[T] native('ObservableDistinctUntilChanged')
+operator with-latest-from[T,X] { o $[T], x $[X] } $[Pair[T,X]] native('ObservableWithLatestFrom')
+operator map-to-latest-from[X] { o $[Null], x $[X] } $[X] native('ObservableMapToLatestFrom')
+operator with-cycle[T,X] { o $[T], l List[X] } $[Pair[T,X]] native('ObservableWithCycle')
+operator with-index[T] { o $[T] } $[Pair[T,Int]] native('ObservableWithIndex')
+operator with-time[T] { o $[T] } $[Pair[T,Time]] native('ObservableWithTime')
+operator delay-subscription[T] { o $[T], ms Int } $[T] native('ObservableDelaySubscription')
+operator delay-values[T] { o $[T], ms Int } $[T] native('ObservableDelayValues')
+operator start-with[T] { o $[T], item T } $[T] native('ObservableStartWith')
+operator end-with[T]   { o $[T], item T } $[T] native('ObservableEndWith')
+operator throttle[T] { o $[T], f Lambda[T,$[Null]] } $[T] native('ObservableThrottle')
+operator debounce[T] { o $[T], f Lambda[T,$[Null]] } $[T] native('ObservableDebounce')
+operator throttle-time[T] { o $[T], ms Int } $[T] native('ObservableThrottleTime')
+operator debounce-time[T] { o $[T], ms Int } $[T] native('ObservableDebounceTime')
+operator complete-on-emit[T] { o $[T] } $[Null] native('ObservableCompleteOnEmit')
+operator skip[T] { o $[T], n Int } $[T] native('ObservableSkip')
+operator take[T] { o $[T], n Int } $[T] native('ObservableTake')
+operator take-last[T] { o $[T] } $[T] native('ObservableTakeLast')
+operator take-last?[T] { o $[T] } $[Maybe[T]] native('ObservableTakeLastAsMaybe')
+operator take-while[T] { o $[T], f Lambda[T,Bool] } $[T] native('ObservableTakeWhile')
+operator take-while?[T] { o $[Maybe[T]] } $[T] native('ObservableTakeWhileMaybeOK')
+operator take-until[T] { o $[T], stop $[Null] } $[T] native('ObservableTakeUntil')
+operator count[T] { o $[T] } $[Int] native('ObservableCount')
+operator collect[T] { o $[T], n Int(-1) } $[List[T]] native('ObservableCollect')
+operator buffer-time[T] { o $[T], ms Int } $[List[T]] native('ObservableBufferTime')
+operator pairwise[T] { o $[T] } $[Pair[T,T]] native('ObservablePairwise')
+operator buffer-count[T] { o $[T], n Int } $[Queue[T]] native('ObservableBufferCount')
+operator map[A,B] { o $[A], f Lambda[A,B] } $[B] native('ObservableMap')
+operator map-to[A,B] { o $[A], v B } $[B] native('ObservableMapTo')
+operator filter[T] { o $[T], f Lambda[T,Bool] } $[T] native('ObservableFilter')
+operator scan[A,B] { o $[A], v B, f Lambda[Pair[B,A],B] } $[B] native('ObservableScan')
+operator reduce[A,B] { o $[A], v B, f Lambda[Pair[B,A],B] } $[B] native('ObservableReduce')
+operator combine-latest[A,B] { a $[A], b $[B] } $[Pair[A,B]] native('ObservableCombineLatest')
+operator combine-latest[T] { l List[$[T]] } $[List[T]] native('ListObservableCombineLatest')
+operator await[A,B] { o $[A], k Lambda[A,$[B]] } $[B] native('ObservableAwait')
+operator await-noexcept[A,B] { o $[A], k Lambda[A,$[B]] } $[B] native('ObservableAwaitNoexcept')
+operator then[T] { o $[Null], k $[T] } $[T] native('ObservableThen')
+operator with[T] { o $[T], bg $[Null] } $[T] native('ObservableWith')
+operator and[T] { o $[T], bg $[Null] } $[T] native('ObservableAnd')
+operator auto-map[A,B] { o $[A], f Lambda[A,$[B]] } $[B] native('ObservableAutoMap')
+operator merge[T]  { l List[$[T]] } $[T] native('ListObservableMerge')
+operator concat[T] { l List[$[T]] } $[T] native('ListObservableConcat')
+operator merge[T]  { o1 $[T], o2 $[T] } $[T] native('ObservableMerge')
+operator concat[T] { o1 $[T], o2 $[T] } $[T] native('ObservableConcat')
+operator merge-map[A,B]   { o $[A], f Lambda[A,$[B]] } $[B] native('ObservableMergeMap')
+operator concat-map[A,B]  { o $[A], f Lambda[A,$[B]] } $[B] native('ObservableConcatMap')
+operator switch-map[A,B]  { o $[A], f Lambda[A,$[B]] } $[B] native('ObservableSwitchMap')
+operator exhaust-map[A,B] { o $[A], f Lambda[A,$[B]] } $[B] native('ObservableExhaustMap')
+const NumCPU Int native('NumCPU')
+operator concurrent[T] { l List[$[T]], n Int(NumCPU) } $[T] native('ListObservableConcurrent')
+operator concurrent-map[A,B] { o $[A], f Lambda[A,$[B]], n Int(NumCPU) } $[B] native('ObservableConcurrentMap')
+operator fork-join[T] { l List[$[T]], n Int(NumCPU) } $[List[T]] native('ListObservableForkJoin')
+operator fork-join[A,B] { a $[A], b $[B], n Int(NumCPU) } $[Pair[A,B]] native('ObservableForkJoin')
+const UUID $[String] native('UUID')
+function Random { supremum Int } $[Int] native('Random')
+function Shuffle[T] { l List[T] } $[List[T]] native('Shuffle')
+
+type Subject[T] native
+function variadic CreateSubject[T] { replay Int(0), items List[T] } $[Subject[T]] native('CreateSubject')
+method Subject.$ $[T] { this.Values }
+method Subject.Values $[T] native('SubjectValues')
+method Subject.SampleValue $[T] { Sample(this.Values) }
+operator << [T] { s Subject[T], o $[T] } $[Null] { (s plug o) }
+operator <- [T] { s Subject[T], v T } $[Null] { (s push v) }
+operator plug[T] { s Subject[T], o $[T] } $[Null] native('SubjectPlug')
+operator push [T] { s Subject[T], v T } $[Null] { s | plug($(v)) | end-with(Null) }
+function Multicast[T] { o $[T] } $[$[T]] native('Multicast')
+function Loopback[T] { k Lambda[$[T],$[T]] } $[T] native('Loopback')
+function SkipSync[T] { o $[T] } $[T] native('SkipSync')
+function Sample[T] { o $[T] } $[T] { ($(Null) map-to-latest-from o) }
+
+type State[T] record {
+    <Subject> Subject[T]
+}
+function CreateState[T] { initial T } $[State[T]] {
+    @map subject = CreateSubject[T](1, initial),
+    new State(subject)
+}
+method State.$ $[T] { this.Value }
+method State.Value $[T] {
+    this.<Subject>.Values
+}
+operator bind-update[T] { state State[T], updates $[Lambda[T,T]] } $[Null] {
+    (state bind-override {
+        updates | with-latest-from(state.$) | map({ (f,v) => f(v) })
+    })
+}
+operator bind-override[T] { state State[T], values $[T] } $[Null] {
+    (state.<Subject> plug values)
+}
+operator update[T] { state State[T], update Lambda[T,T] } $[Null] {
+    state | bind-update($(update)) | end-with(Null)
+}
+operator override[T] { state State[T], value T } $[Null] {
+    state | bind-override($(value)) | end-with(Null)
+}
+function MakeMemo[T] { o $[T] } $[$[T]] {
+    @await subject = CreateSubject[T](1),
+    $(subject.Values) | with((subject plug o))
+}
+
+type Time(~String) native
+method Time.String String native('TimeString')
+operator -ms { t Time, u Time } Int native('TimeSubtractMillisecond')
+const Now $[Time] native('Now')
+function TimeOf[T] { o $[T] } $[Time] { ({o | with-time()} map { (_,t) => t }) }
+
+type Lambda[A,B] native
+operator *  [A,B,C] { f Lambda[B,C], g Lambda[A,B] } Lambda[A,C] {{ x => f(g(x)) }}
+operator -> [A,B]   { x A, f Lambda[A,B] } B { f(x) }
+operator call [A,B] { f Lambda[A,B], x A } B { f(x) }
+
+type Pair[A,B] record {
+    First   A,
+    Second  B
+}
+type Triple[A,B,C] record {
+    First   A,
+    Second  B,
+    Third   C
+}
+function Pair[A,B] { first A, second B } Pair[A,B] {
+    new Pair(first, second)
+}
+function Triple[A,B,C] { first A, second B, third C } Triple[A,B,C] {
+    new Triple(first, second, third)
+}
+
+type Maybe[OK] union {
+    Null,
+    OK
+}
+function Nothing[T] {} Maybe[T] {
+    Null
+}
+function Just[T] { value T } Maybe[T] {
+    value
+}
+method Maybe.List List[OK] {
+    if (let value = this) { List(value) }
+    else { List() }
+}
+method Maybe.$ $[OK] {
+    if (let value = this) { $(value) }
+    else { $() }
+}
+operator ??[T] { value? Maybe[T], fallback T } T {
+    if (let value = value?) { value }
+    else { fallback }
+}
+operator map[A,B] { v? Maybe[A], f Lambda[A,B] } Maybe[B] {
+    if (let v = v?) { f(v) }
+    else { Null }
+}
+operator filter[T] { v? Maybe[T], f Lambda[T,Bool] } Maybe[T] {
+    if (let v = v?) {
+        if (f(v)) { v }
+        else { Null }
+    }
+    else { Null }
+}
+operator maybe[A,B] { v? Maybe[A], k Lambda[A,Maybe[B]] } Maybe[B] {
+    if (let v = v?) {
+        if (let w = k(v)) { w }
+        else { Null }
+    }
+    else { Null }
+}
+
+type Result[OK] union {
+    Error,
+    OK
+}
+function Success[T] { value T } Result[T] {
+    value
+}
+method Result.Maybe Maybe[OK] {
+    when (this) {
+        Error => Null,
+        OK value => value
+    }
+}
+operator map[A,B] { r Result[A], f Lambda[A,B] } Result[B] {
+    when (r) {
+        OK a => f(a),
+        Error e => e
+    }
+}
+
+type Lens1[Whole,Part] record {
+    Value   Part,
+    Assign  Lambda[Part,Whole]
+}
+type Lens2[Abstract,Concrete] record {
+    Value   Maybe[Concrete],
+    Assign  Lambda[Concrete,Abstract]
+}
+method Lens1.Update Lambda[Lambda[Part,Part],Whole] {{
+    f => this.Assign(f(this.Value))
+}}
+method Lens2.Update Lambda[Lambda[Maybe[Concrete],Concrete],Abstract] {{
+    f => this.Assign(f(this.Value))
+}}
+method Lens1.Update? Lambda[Lambda[Part,Maybe[Part]],Maybe[Whole]] {{
+    f => (f(this.Value) map this.Assign)
+}}
+method Lens2.Update? Lambda[Lambda[Maybe[Concrete],Maybe[Concrete]],Maybe[Abstract]] {{
+    f => (f(this.Value) map this.Assign)
+}}
+operator compose1[A,B,C] { ab Lens1[A,B], f Lambda[B,Lens1[B,C]] } Lens1[A,C] {
+    new Lens1 {
+        Value:  f(ab.Value).Value,
+        Assign: { c => ab.Assign(f(ab.Value).Assign(c)) }
+    }
+}
+operator compose2[A,B,C] { ab Lens1[A,B], f Lambda[B,Lens2[B,C]] } Lens2[A,C] {
+    new Lens2 {
+        Value:  f(ab.Value).Value,
+        Assign: { c => ab.Assign(f(ab.Value).Assign(c)) }
+    }
+}
+operator compose[A,B,C] { ab Lens2[A,B], f Lambda[Maybe[B],Lens2[B,C]] } Lens2[A,C] {
+    new Lens2 {
+        Value:  f(ab.Value).Value,
+        Assign: { c => ab.Assign(f(ab.Value).Assign(c)) }
+    }
+}
+
+function Get[Resp] { endpoint String, t IntoReflectType[Resp], token String('') } $[Resp] native('Get')
+function Post[Req,Resp] { data IntoReflectValue[Req], endpoint String, t IntoReflectType[Resp], token String('') } $[Resp] native('Post')
+function Put[Req,Resp] { data IntoReflectValue[Req], endpoint String, t IntoReflectType[Resp], token String('') } $[Resp] native('Put')
+function Delete[Resp] { endpoint String, t IntoReflectType[Resp], token String('') } $[Resp] native('Delete')
+function Subscribe[Resp] { endpoint String, t IntoReflectType[Resp], token String('') } $[Resp] native('Subscribe')
+
+/// opaque file path type
+type File(~String) native
+method File.String String native('FileString')
+operator == { f File, g File } Bool native('FileEqual')
+function ReadTextFile { f File } $[String] native('ReadTextFile')
+function WriteTextFile { f File, text String } $[Null] native('WriteTextFile')
+
+function ReadConfig[T] { dir String, name String, default IntoReflectValue[T] } $[T] native('ReadConfig')
+function WriteConfig[T] { dir String, name String, value IntoReflectValue[T] } $[Null] native('WriteConfig')
+
+const Arguments List[String] native('Arguments')
+const Environment List[String] native('Environment')
+
+const FontSize Int native('FontSize')
+
+function ShowInfo     { content String, title String('Info') } $[Null] native('ShowInfo')
+function ShowWarning  { content String, title String('Warning') } $[Null] native('ShowWarning')
+function ShowCritical { content String, title String('Error') } $[Null] native('ShowCritical')
+function ShowYesNo             { content String, title String('Question') } $[Bool] native('ShowYesNo')
+function ShowAbortRetryIgnore  { content String, title String('Error') } $[Retry/Ignore] native('ShowAbortRetryIgnore')
+function ShowSaveDiscardCancel { content String, title String('Save Changes') } $[Save/Discard] native('ShowSaveDiscardCancel')
+type Retry/Ignore enum { Retry, Ignore }
+type Save/Discard enum { Save, Discard }
+
+function GetChoice[T] { prompt String, items List[ComboBoxItem[T]], title String('Select') } $[T] native('GetChoice')
+function GetLine { prompt String, initial String(''), title String('Input') } $[String] native('GetLine')
+function GetText { prompt String, initial String(''), title String('Input') } $[String] native('GetText')
+function GetInt { prompt String, initial Int(0), title String('Input') } $[Int] native('GetInt')
+function GetFloat { prompt String, initial Float(0), title String('Input') } $[Float] native('GetFloat')
+
+function GetFileListToOpen[T] { filter String } $[List[File]] native('GetFileListToOpen')
+function GetFileToOpen[T] { filter String } $[File] native('GetFileToOpen')
+function GetFileToSave[T] { filter String } $[File] native('GetFileToSave')
+
+type Action native
+function Action {
+    icon      Icon,
+    text      String,
+    shortcut  String (''),
+    repeat    Bool (No),
+    enable    $[Bool] ($())
+       }      Hook[Action]
+    native    ('Action')
+//
+method Action.Triggers $[Null] native('ActionTriggers')
+
+type ActionCheckBox record { Checked $[Bool] }
+function ActionCheckBox { action Action, checked Bool } Hook[ActionCheckBox] native('ActionCheckBox')
+
+type ActionComboBox[T] record { SelectedItem $[T] }
+function ActionComboBox[T] { items List[ActionComboBoxItem[T]] } Hook[ActionComboBox[T]] native('ActionComboBox')
+type ActionComboBoxItem[T] record { Action Action, Value T, Selected Bool }
+function ActionComboBoxItem[T] { action Action, value T, selected Bool } ActionComboBoxItem[T] { new ActionComboBoxItem(action, value, selected) }
+
+type MenuBar record { Menus List[Menu] }
+function variadic MenuBar { menus List[Menu] } MenuBar { new MenuBar(menus) }
+type ToolBar record { Mode ToolBarMode, Items List[ToolBarItem] }
+function variadic ToolBar { mode ToolBarMode(IconOnly), items List[ToolBarItem] } ToolBar { new ToolBar(mode, items) }
+type ToolBarMode enum { IconOnly, TextOnly, TextBesideIcon, TextUnderIcon }
+type Menu record { Icon Icon, Name String, Items List[MenuItem] }
+function variadic Menu { icon Icon, name String, items List[MenuItem] } Menu { new Menu(icon,name,items) }
+type MenuItem union { Menu, Action, Separator }
+type ToolBarItem union { Menu, Action, Separator, Widget, Spacer }
+type Separator record {}
+function Separator {} Separator { new Separator() }
+
+function <BindContextMenu> { w Widget, m Menu } $[Null] native('BindContextMenu')
+function ContextMenu { w Widget, m Menu } Hook[Null] { Effect(<BindContextMenu>(w,m)) }
+
+type Widget native
+type Widgets union { Widget, List[Widget] }
+function <ShowAndActivate> { w Widget } $[Null] native('ShowAndActivate')
+function <BindInlineStyleSheet> { w Widget, o $[String] } $[Null] native('BindInlineStyleSheet')
+function <ComboBoxSelectedItem>[T] { w Widget, items List[ComboBoxItem[T]] } $[T] native('ComboBoxSelectedItem')
+function <CreateDynamicWidget> { widgets $[Widget] } Hook[Widget] native('CreateDynamicWidget')
+function <CreateWidget> { l Layout, margin-x Int, margin-y Int, policy-x SizePolicy, policy-y SizePolicy } Hook[Widget] native('CreateWidget')
+function <CreateScrollArea> { scroll Scroll, l Layout, margin-x Int, margin-y Int } Hook[Widget] native('CreateScrollArea')
+function <CreateGroupBox> { title String, l Layout, margin-x Int, margin-y Int } Hook[Widget] native('CreateGroupBox')
+function <CreateSplitter> { l List[Widget] } Hook[Widget] native('CreateSplitter')
+function <CreateMainWindow> { menu-bar MenuBar, tool-bar ToolBar, l Layout, margin-x Int, margin-y Int, width Int, height Int, icon Icon } Hook[Widget] native('CreateMainWindow')
+function <CreateDialog> { l Layout, margin-x Int, margin-y Int, width Int, height Int, icon Icon } Hook[Widget] native('CreateDialog')
+function <CreateLabel> { align Align, selectable Bool } Hook[Widget] native('CreateLabel')
+function <CreateIconLabel> { icon Icon, size Int } Hook[Widget] native('CreateIconLabel')
+function <CreateElidedLabel> {} Hook[Widget] native('CreateElidedLabel')
+function <CreateTextView> { format TextFormat } Hook[Widget] native('CreateTextView')
+function <CreateCheckBox> { text String, checked Bool } Hook[Widget] native('CreateCheckBox')
+function <CreateComboBox>[T] { items List[ComboBoxItem[T]] } Hook[Widget] native('CreateComboBox')
+function <CreatePushButton> { icon Icon, text String, tooltip String } Hook[Widget] native('CreatePushButton')
+function <CreateLineEdit> { text String } Hook[Widget] native('CreateLineEdit')
+function <CreatePlainTextEdit> { text String } Hook[Widget] native('CreatePlainTextEdit')
+function <CreateSlider> { value Int, min Int, max Int } Hook[Widget] native('CreateSlider')
+function <CreateProgressBar> { max Int, format String } Hook[Widget] native('CreateProgressBar')
+
+type <Signal>[T] native
+type <Events>[T] native
+function <Connect>[T] { s <Signal>[T], w Widget } $[T] native('Connect')
+function <Listen>[T]  { s <Events>[T], w Widget } $[T] native('Listen')
+const <<Toggled>> <Signal>[Null] native('SignalToggled')
+const <<Clicked>> <Signal>[Null] native('SignalClicked')
+const <<TextChanged0>> <Signal>[Null] native('SignalTextChanged0')
+const <<TextChanged1>> <Signal>[Null] native('SignalTextChanged1')
+const <<ReturnPressed>> <Signal>[Null] native('SignalReturnPressed')
+const <<ValueChanged>> <Signal>[Null] native('SignalValueChanged')
+const <<Show>> <Events>[Null] native('EventsShow')
+const <<Close>> <Events>[Null] native('EventsClose')
+
+type <Prop>[T] native
+function <Read>[T] { p <Prop>[T], s <Signal>[Null] } <Signal>[T] native('Read')
+function <Bind>[T] { p <Prop>[T], o $[T], w Widget } $[Null] native('Bind')
+function <ClearTextLater>[T] { w Widget, o $[T] } $[T] native('ClearTextLater')
+const <<Enabled>> <Prop>[Bool] native('PropEnabled')
+const <<WindowTitle>> <Prop>[String] native('PropWindowTitle')
+const <<Text>> <Prop>[String] native('PropText')
+const <<Checked>> <Prop>[Bool] native('PropChecked')
+const <<PlainText>> <Prop>[String] native('PropPlainText')
+const <<Value>> <Prop>[Int] native('PropValue')
+
+type Icon record { Name String }
+function Icon { name String('') } Icon { new Icon(name) }
+
+type SizePolicy enum { Rigid, Controlled, Incompressible, IncompressibleExpanding, Free, FreeExpanding, Bounded }
+type Align enum { Default, Center, Left, Right, Top, Bottom, LeftTop, LeftBottom, RightTop, RightBottom }
+type Scroll enum { BothDirection, VerticalOnly, HorizontalOnly }
+type TextFormat enum { Plain, Html, Markdown }
+
+type Layout union { Row, Column, Grid }
+type LayoutItem union { Layout, Widget, Spacer, String }
+type Row record { Items List[LayoutItem], Spacing Int(4) }
+type Column record { Items List[LayoutItem], Spacing Int(4) }
+type Grid record { Items List[Span], RowSpacing Int(4), ColumnSpacing Int(4) }
+type Span record { Item LayoutItem, Row Int, Column Int, RowSpan Int, ColumnSpan Int, Align Align }
+type Spacer record { Width Int, Height Int, Expand Bool }
+function variadic Row { items List[LayoutItem] } Layout { new Row(items) }
+function variadic Column { items List[LayoutItem] } Layout { new Column(items) }
+function variadic Grid { spans List[Span] } Layout { new Grid(spans) }
+function Span { item LayoutItem, row Int, column Int, align Align(Default), row-span Int(1), column-span Int(1) } Span { new Span(item,row,column,row-span,column-span,align) }
+function Spacer { width Int(0), height Int(0), expand Bool(Yes) } LayoutItem { new Spacer(width,height,expand) }
+function Aligned { align Align, item LayoutItem } Layout {
+    Grid(Span(item, 0, 0, align))
+}
+function variadic Form { pairs List[Pair[LayoutItem,LayoutItem]] } Layout {
+    Grid { spans: {
+        @map* (pair, row) = { pairs | with-index() },
+        let (left, right) = pair,
+        List(Span(left, row, 0, Right), Span(right, row, 1))
+    }}
+}
+
+type Wrapper record { Widget Widget }
+function Wrapper { layout Layout, policy-x SizePolicy(Free), policy-y SizePolicy(Free) } Hook[Wrapper] {
+    WrapperWithMargins(layout, 0, 0, policy-x, policy-y)
+}
+function WrapperWithMargins { layout Layout, margin-x Int(6), margin-y Int(4), policy-x SizePolicy(Free), policy-y SizePolicy(Free) } Hook[Wrapper] {
+    @use widget = <CreateWidget>(layout, margin-x, margin-y, policy-x, policy-y),
+    Hook(new Wrapper(widget))
+}
+
+type ScrollArea record { Widget Widget }
+function ScrollArea { scroll Scroll, layout Layout } Hook[ScrollArea] {
+    ScrollAreaWithMargins(scroll, layout, 0, 0)
+}
+function ScrollAreaWithMargins { scroll Scroll, layout Layout, margin-x Int(6), margin-y Int(4) } Hook[ScrollArea] {
+    @use widget = <CreateScrollArea>(scroll, layout, margin-x, margin-y),
+    Hook(new ScrollArea(widget))
+}
+
+type GroupBox record { Widget Widget }
+function GroupBox { title String, layout Layout, margin-x Int(0), margin-y Int(0) } Hook[GroupBox] {
+    @use widget = <CreateGroupBox>(title, layout, margin-x, margin-y),
+    Hook(new GroupBox(widget))
+}
+
+type Splitter record { Widget Widget }
+function variadic Splitter { content List[Widget] } Hook[Splitter] {
+    @use widget = <CreateSplitter>(content),
+    Hook(new Splitter(widget))
+}
+
+type Window record { Widget Widget, <Exit> $[Null] }
+function Window { title $[String], layout Layout, menu-bar MenuBar(MenuBar()), tool-bar ToolBar(ToolBar()), exit Lambda[$[Null],$[Null]] ({ closes => closes }), margin-x Int(6), margin-y Int(6), width Int(-1), height Int(-1), icon Icon(Icon('window')) } Hook[Window] {
+    @use widget = <CreateMainWindow>(menu-bar, tool-bar, layout, margin-x, margin-y, width, height, icon),
+    @use Effect(<Bind>(<<WindowTitle>>, title, widget)),
+    let close = <Listen>(<<Close>>, widget),
+    Hook(new Window(widget, exit(close)))
+}
+
+type Dialog[T] record { Widget Widget, <Exit> $[T] }
+function Dialog[T] { title $[String], layout Layout, exit Lambda[$[Null],$[T]], margin-x Int(6), margin-y Int(6), width Int(-1), height Int(-1), icon Icon(Icon('window')) } Hook[Dialog[T]] {
+    @use widget = <CreateDialog>(layout, margin-x, margin-y, width, height, icon),
+    @use Effect(<Bind>(<<WindowTitle>>, title, widget)),
+    let close = <Listen>(<<Close>>, widget),
+    Hook(new Dialog(widget, exit(close)))
+}
+
+type Switchable record { Widget Widget }
+function Switchable { widgets $[Widget] } Hook[Switchable] {
+    @use widget = <CreateDynamicWidget>(widgets),
+    Hook(new Switchable(widget))
+}
+
+type Reloadable record { Widget Widget }
+function Reloadable { hooks $[Hook[Widget]] } Hook[Reloadable] {
+    @use widget = <CreateDynamicWidget>((hooks run { w => $(w) })),
+    Hook(new Reloadable(widget))
+}
+function LazyReloadable { hooks $[Hook[Widget]] } Hook[Reloadable] {
+    @use bus = Subject[Hook[Widget]] {},
+    @use r = Reloadable(bus.Values),
+    @use Effect({
+        @await { <Listen>(<<Show>>, r.Widget) | take(1) },
+        (bus plug hooks)
+    }),
+    Hook(r)
+}
+
+type Label record { Widget Widget }
+function Label { text $[String], align Align(Left), selectable Bool(No) } Hook[Label] {
+    @use widget = <CreateLabel>(align, selectable),
+    @use Effect(<Bind>(<<Text>>, text, widget)),
+    Hook(new Label(widget))
+}
+
+type ElidedLabel record { Widget Widget }
+function ElidedLabel { text $[String] } Hook[ElidedLabel] {
+    @use widget = <CreateElidedLabel>(),
+    @use Effect(<Bind>(<<Text>>, text, widget)),
+    Hook(new ElidedLabel(widget))
+}
+
+type IconLabel record { Widget Widget }
+function IconLabel { icon Icon, size IconSize(Auto) } Hook[IconLabel] {
+    @use widget = <CreateIconLabel>(icon, ([Int])size),
+    Hook(new IconLabel(widget))
+}
+type IconSize enum { Auto, Small, Medium, Large }
+
+type TextView record { Widget Widget }
+function TextView { text $[String], format TextFormat(Plain) } Hook[TextView] {
+    @use widget = <CreateTextView>(format),
+    @use Effect(<Bind>(<<Text>>, text, widget)),
+    Hook(new TextView(widget))
+}
+
+type CheckBox record { Widget Widget }
+function CheckBox { text String, checked Bool } Hook[CheckBox] {
+    @use widget = <CreateCheckBox>(text, checked),
+    Hook(new CheckBox(widget))
+}
+method CheckBox.Checked $[Bool] { <Connect>(<Read>(<<Checked>>, <<Toggled>>), this.Widget) }
+
+type ComboBox[T] record { Widget Widget, SelectedItem $[T] }
+function ComboBox[T] { items List[ComboBoxItem[T]] } Hook[ComboBox[T]] {
+    @use widget = <CreateComboBox>(items),
+    let selected = <ComboBoxSelectedItem>(widget, items),
+    Hook(new ComboBox(widget, selected))
+}
+type ComboBoxItem[T] record { Icon Icon, Name String, Value T, Selected Bool }
+function ComboBoxItem[T] { icon Icon, name String, value T, selected Bool } ComboBoxItem[T] {
+    new ComboBoxItem(icon, name, value, selected)
+}
+
+type Button record { Widget Widget }
+function Button { icon Icon, text String, tooltip String(''), enable $[Bool]($()) } Hook[Button] {
+    @use widget = <CreatePushButton>(icon, text, tooltip),
+    @use Effect(<Bind>(<<Enabled>>, enable, widget)),
+    Hook(new Button(widget))
+}
+function PlainButton { text String, enable $[Bool]($()) } Hook[Button] {
+    Button(Icon(), text, '', enable)
+}
+function IconButton { icon Icon, tooltip String, enable $[Bool]($()) } Hook[Button] {
+    Button(icon, '', tooltip, enable)
+}
+method Button.Clicks $[Null] { <Connect>(<<Clicked>>, this.Widget) }
+
+type TextBox record { Widget Widget }
+function TextBox { text String('') } Hook[TextBox] {
+    @use widget = <CreateLineEdit>(text),
+    Hook(new TextBox(widget))
+}
+method TextBox.Text $[String] { <Connect>(<Read>(<<Text>>, <<TextChanged1>>), this.Widget) }
+method TextBox.Enters $[Null] { <Connect>(<<ReturnPressed>>, this.Widget) }
+method TextBox.TextOn Lambda[$[Null],$[String]] {{ triggers => <ClearTextLater>(this.Widget, (triggers map-to-latest-from this.Text)) }}
+method TextBox.TextOnEnters $[String] { this.TextOn(this.Enters) }
+operator bind-override { edit TextBox, text $[String] } $[Null] { <Bind>(<<Text>>, text, edit.Widget) }
+
+type TextArea record { Widget Widget }
+function TextArea { text String('') } Hook[TextArea] {
+    @use widget = <CreatePlainTextEdit>(text),
+    Hook(new TextArea(widget))
+}
+method TextArea.Text $[String] { <Connect>(<Read>(<<PlainText>>, <<TextChanged0>>), this.Widget) }
+
+type Slider record { Widget Widget }
+function Slider { value Int, min Int, max Int } Hook[Slider] {
+    @use widget = <CreateSlider>(value, min, max),
+    Hook(new Slider(widget))
+}
+method Slider.Value $[Int] { <Connect>(<Read>(<<Value>>, <<ValueChanged>>), this.Widget) }
+
+type ProgressBar record { Widget Widget }
+function ProgressBar { value $[Int], max Int, format String('') } Hook[ProgressBar] {
+    @use widget = <CreateProgressBar>(max, format),
+    @use Effect(<Bind>(<<Value>>, value, widget)),
+    Hook(new ProgressBar(widget))
+}
+
+type ListView[T] record {
+    Widget       Widget,
+    Extension    $[Maybe[Widget]],
+    Current      $[Maybe[String]],
+    Selection    $[List[String]],
+    Activations  $[String]
+}
+function ListView[T] {
+    data     $[List[T]],
+    key      Lambda[T, String],
+    content  Lambda[Pair[$[T],ItemInfo], Hook[ItemView]],
+    headers  List[HeaderView] (List()),
+    stretch  Int (-1),
+    select   ItemSelect (Single)
+       }     Hook[ListView[T]]
+    native   ('ListView')
+//
+type ItemView record {
+    <Widgets>   Widgets,
+    <Extension> Maybe[Widget]
+}
+function ItemView { widgets Widgets, extension Maybe[Widget] (Null) } Hook[ItemView] {
+    Hook(new ItemView(widgets,extension))
+}
+
+type ListEditView[T] record {
+    Widget     Widget,
+    Output     $[List[T]],
+    Extension  $[Maybe[Widget]],
+    <EditOps>  Subject[<ListEditOperation>[T]]
+}
+function ListEditView[T] {
+    initial  List[T],
+    content  Lambda[Pair[T,ItemInfo], Hook[ItemEditView[T]]],
+    headers  List[HeaderView] (List()),
+    stretch  Int (-1),
+    select   ItemSelect (Single)
+       }     Hook[ListEditView[T]]
+    native   ('ListEditView')
+//
+operator bind-update[T] {
+    list         ListEditView[T],
+    prepend      $[T] ($()),
+    append       $[T] ($()),
+    delete       $[Null] ($()),
+    move-up      $[Null] ($()),
+    move-down    $[Null] ($()),
+    move-top     $[Null] ($()),
+    move-bottom  $[Null] ($()),
+    reorder      $[Lambda[List[T],List[T]]] ($())
+       }         $[Null]
+       {
+    (list.<EditOps> plug Merge(
+        (prepend map { value => new <Prepend>(value) }),
+        (append map { value => new <Append>(value) }),
+        (delete map { => new <Delete>() }),
+        (move-up map { => new <MoveUp>() }),
+        (move-down map { => new <MoveDown>() }),
+        (move-top map { => new <MoveTop>() }),
+        (move-bottom map { => new <MoveBottom>() }),
+        (reorder map { reorder => new <Reorder>(reorder) })
+    ))}
+//
+type ItemEditView[T] record {
+    <Widgets>    Widgets,
+    <Extension>  Maybe[Widget],
+    <EditOps>    Lambda[String,$[<ListEditOperation>[T]]]
+}
+function ItemEditView[T] {
+    widgets       Widgets,
+    extension     Maybe[Widget] (Null),
+    update        $[T] ($()),
+    delete        $[Null] ($()),
+    move-up       $[Null] ($()),
+    move-down     $[Null] ($()),
+    move-top      $[Null] ($()),
+    move-bottom   $[Null] ($()),
+    insert-above  $[T] ($()),
+    insert-below  $[T] ($())
+          }       Hook[ItemEditView[T]]
+          {
+    Hook(new ItemEditView {
+        <Widgets>:   widgets,
+        <Extension>: extension,
+        <EditOps>: { key => Merge(
+            (update map { value => new <Update>(key,value) }),
+            (delete map { => new <Delete>(key) }),
+            (move-up map { => new <MoveUp>(key) }),
+            (move-down map { => new <MoveDown>(key) }),
+            (move-top map { => new <MoveTop>(key) }),
+            (move-bottom map { => new <MoveBottom>(key) }),
+            (insert-above map { value => new <InsertAbove>(key,value) }),
+            (insert-below map { value => new <InsertBelow>(key,value) })
+        )}
+    })}
+//
+type <ListEditOperation>[T] union {
+    <Prepend>[T], <Append>[T],
+    <Update>[T], <Delete>,
+    <MoveUp>, <MoveDown>,
+    <MoveTop>, <MoveBottom>,
+    <InsertAbove>[T], <InsertBelow>[T],
+    <Reorder>[T]
+}
+type <Prepend>[T] record { Value T }
+type <Append>[T] record { Value T }
+type <Update>[T] record { Key String, Value T }
+type <Delete> record { Key Maybe[String](Null) }
+type <MoveUp> record { Key Maybe[String](Null) }
+type <MoveDown> record { Key Maybe[String](Null) }
+type <MoveTop> record { Key Maybe[String](Null) }
+type <MoveBottom> record { Key Maybe[String](Null) }
+type <InsertAbove>[T] record { PivotKey String, Value T }
+type <InsertBelow>[T] record { PivotKey String, Value T }
+type <Reorder>[T] record { Reorder Lambda[List[T],List[T]] }
+
+type HeaderView union { String, Widget }
+type ItemSelect enum { N/A, Single, Multiple, MaybeMultiple }
+type ItemInfo record { Key String, Pos $[ItemPos] }
+type ItemPos record { Index Int, Total Int }
+method ItemInfo.IsFirst $[Bool] { (this.Pos map { (i,_) => (i == 0) }) }
+method ItemInfo.IsLast  $[Bool] { (this.Pos map { (i,n) => ((i + 1) == n) }) }
+
+type Editor[T] record {
+    Widget      Widget,
+    <Output>    Subject[T],
+    <Override>  Subject[T],
+    <LastSave>  Subject[T],
+    <File>      Subject[Maybe[File]],
+    <Open>      EditorOpenBehavior[T],
+    <Save>      EditorSaveBehavior[T]
+}
+function Editor[T] {
+    initial  EditorDocument[T],
+    content  Lambda[T,Hook[EditorView[T]]],
+    open     EditorOpenBehavior[T] ({ => $() }),
+    save     EditorSaveBehavior[T] ({ doc => $(doc.File?) })
+        }    Hook[Editor[T]]
+        {
+    let (file?,initial) = initial,
+    @use last-save = Subject(1, initial),
+    @use output = Subject(1, initial),
+    @use override = Subject[T](),
+    @use Effect((output plug override.$)),
+    @use r = Reloadable({
+        @map value = (override.$ start-with initial),
+        @use (widget, new-values) = content(value),
+        @use Effect((output plug SkipSync(new-values))),
+        Hook(widget)
+    }),
+    @use file = Subject(1, file?),
+    Hook(new Editor(r.Widget, output, override, last-save, file, open, save)) }
+//
+method Editor.Document $[EditorDocument[T]] {
+    new:$ EditorDocument(this.File?, this.Output)
+}
+method Editor.File? $[Maybe[File]] {
+    this.<File>.$
+}
+method Editor.Output $[T] {
+    this.<Output>.$
+}
+method Editor.LastSave $[T] {
+    this.<LastSave>.$
+}
+method Editor.Modified $[Bool] {
+    <ObjectPairEqualities>((this.LastSave combine-latest this.Output))
+        | map(Not)
+}
+operator bind-override[T] { e Editor[T], values $[T] } $[Null] {
+    (e.<Override> plug values)
+}
+operator bind-reset[T] { e Editor[T], triggers $[Null] } $[Null] {
+    (e bind-override (triggers map-to-latest-from e.LastSave))
+}
+operator bind-open[T] { e Editor[T], triggers $[Null] } $[Null] {
+    @concat-map modified = (triggers map-to-latest-from e.Modified),
+    @await <EditorOpen>(e, modified),
+    return ()
+}
+operator bind-save[T] { e Editor[T], triggers $[Null] } $[Null] {
+    @concat-map doc = (triggers map-to-latest-from e.Document),
+    @await <EditorSave>(e, doc),
+    return ()
+}
+operator bind-save-as[T] { e Editor[T], triggers $[Null] } $[Null] {
+    @concat-map doc = (triggers map-to-latest-from e.Document),
+    @await <EditorSave>(e, doc.(File?).Assign(Null)),
+    return ()
+}
+operator ask-for-save[T] { e Editor[T], message String, title String('Save Changes') } $[Null] {
+    @await doc = Sample(e.Document),
+    @await modified = Sample(e.Modified),
+    if (modified) {
+        @await choice = ShowSaveDiscardCancel(message, title),
+        when (choice) {
+            Save => {
+                @await <EditorSave>(e, doc),
+                return (Null)
+            },
+            Discard =>
+                return (Null)
+        }
+    } else {
+        return (Null)
+    }
+}
+type EditorOpenBehavior[T] interface {
+    Open Lambda[Bool,$[EditorDocument[T]]]
+}
+function <EditorOpen>[T] { e Editor[T], modified Bool } $[Null] {
+    @await new-doc = { e.<Open>(modified) | log-error() },
+    @await (e.<File> <- new-doc.File?),
+    @await (e.<LastSave> <- new-doc.Data),
+    @await (e.<Override> <- new-doc.Data),
+    return (Null)
+}
+type EditorSaveBehavior[T] interface {
+    Save Lambda[EditorDocument[T],$[Maybe[File]]]
+}
+function <EditorSave>[T] { e Editor[T], doc EditorDocument[T] } $[Null] {
+    @await new-file = { e.<Save>(doc) | log-error() },
+    @await (e.<File> <- new-file),
+    @await (e.<LastSave> <- doc.Data),
+    return (Null)
+}
+type EditorDocument[T] record {
+    File?  Maybe[File],
+    Data   T
+}
+function EditorDocument[T] { file? Maybe[File], data T } EditorDocument[T] {
+    new EditorDocument(file?, data)
+}
+type EditorView[T] record {
+    Widget     Widget,
+    NewValues  $[T]
+}
+function EditorView[T] { w Widget, new-values $[T] } Hook[EditorView[T]] {
+    Hook(new EditorView(w, new-values))
+}
+
+type Hook[T] record { <Job> $[T] }
+function Hook[T] { value T } Hook[T] { new Hook($(value)) }
+operator use[A,B] { h Hook[A], f Lambda[A,Hook[B]] } Hook[B] {
+    new Hook((h.<Job> await-noexcept { a => f(a).<Job> }))
+}
+operator run[T,X] { h Hook[T], f Lambda[T,$[X]] } $[X] {
+    WithChildContext((h.<Job> await-noexcept f))
+}
+operator run[T,X] { o $[Hook[T]], f Lambda[T,$[X]] } $[X] {
+    (o switch-map { h => (h.<Job> await-noexcept f) })
+}
+
+function Hooks[T] { l List[Hook[T]] } Hook[List[T]] {
+    l | reverse() | fold(Hook(List()), { (r,i) => {
+        @use head = i,
+        @use tail = r,
+        Hook(Cons(head, tail))
+    }})
+}
+
+function Effect { effect $[Null] } Hook[Null] {
+    new Hook(($(Null) with effect))
+}
+
+function State[T] { initial T } Hook[State[T]] {
+    new Hook(CreateState(initial))
+}
+function Memo[T] { o $[T] } Hook[$[T]] {
+    new Hook(MakeMemo(o))
+}
+
+function variadic Subject[T] { replay Int(0), items List[T] } Hook[Subject[T]] {
+    new Hook(CreateSubject[T] { replay, items })
+}
+function Multicasting[T] { o $[T] } Hook[$[T]] {
+    new Hook(Multicast(o))
+}
+
+function Style { w Widget, o $[String] } Hook[Null] {
+    Effect(<BindInlineStyleSheet>(w, o))
+}
+
+function ShowWindow { h Hook[Window] } $[Null] {
+    @run window = h,
+    let watch-exit = window.<Exit>,
+    let show = <ShowAndActivate>(window.Widget),
+    { watch-exit | take(1) | and(show) }
+}
+
+function ShowDialog[T] { h Hook[Dialog[T]] } $[T] {
+    @run dialog = h,
+    let watch-exit = dialog.<Exit>,
+    let show = <ShowAndActivate>(dialog.Widget),
+    { watch-exit | take(1) | and(show) }
+}
+
+
